@@ -6,6 +6,19 @@ const speechInputSchema = z.object({
   contextDate: z.string().optional(),
 });
 
+export interface SpeechResult {
+  title?: string;
+  description?: string;
+  scope?: "empresa" | "pessoal";
+  category?: string;
+  date?: string;
+  startTime?: string;
+  endTime?: string;
+  location?: string | null;
+  responsible?: string;
+  priority?: "baixa" | "media" | "alta" | "urgente";
+}
+
 export const processSpeech = createServerFn({ method: "POST" })
   .inputValidator((data) => speechInputSchema.parse(data))
   .handler(async ({ data }) => {
