@@ -19,6 +19,7 @@ import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_a
 import { Route as AuthenticatedContatosIndexRouteImport } from './routes/_authenticated/contatos/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 import { Route as AuthenticatedEmpresarialIndexRouteImport } from './routes/_authenticated/empresarial/index'
+import { Route as AuthenticatedNotificacoesIndexRouteImport } from './routes/_authenticated/notificacoes/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -76,6 +77,12 @@ const AuthenticatedEmpresarialIndexRoute =
     path: '/empresarial/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedNotificacoesIndexRoute =
+  AuthenticatedNotificacoesIndexRouteImport.update({
+    id: '/notificacoes/',
+    path: '/notificacoes/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/contatos/': typeof AuthenticatedContatosIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/empresarial/': typeof AuthenticatedEmpresarialIndexRoute
+  '/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -98,6 +106,7 @@ export interface FileRoutesByTo {
   '/contatos': typeof AuthenticatedContatosIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/empresarial': typeof AuthenticatedEmpresarialIndexRoute
+  '/notificacoes': typeof AuthenticatedNotificacoesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -111,6 +120,7 @@ export interface FileRoutesById {
   '/_authenticated/contatos/': typeof AuthenticatedContatosIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/empresarial/': typeof AuthenticatedEmpresarialIndexRoute
+  '/_authenticated/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -124,6 +134,7 @@ export interface FileRouteTypes {
     | '/contatos/'
     | '/dashboard/'
     | '/empresarial/'
+    | '/notificacoes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -135,6 +146,7 @@ export interface FileRouteTypes {
     | '/contatos'
     | '/dashboard'
     | '/empresarial'
+    | '/notificacoes'
   id:
     | '__root__'
     | '/'
@@ -147,6 +159,7 @@ export interface FileRouteTypes {
     | '/_authenticated/contatos/'
     | '/_authenticated/dashboard/'
     | '/_authenticated/empresarial/'
+    | '/_authenticated/notificacoes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -227,6 +240,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEmpresarialIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/notificacoes/': {
+      id: '/_authenticated/notificacoes/'
+      path: '/notificacoes'
+      fullPath: '/notificacoes/'
+      preLoaderRoute: typeof AuthenticatedNotificacoesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -238,6 +258,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedContatosIndexRoute: typeof AuthenticatedContatosIndexRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedEmpresarialIndexRoute: typeof AuthenticatedEmpresarialIndexRoute
+  AuthenticatedNotificacoesIndexRoute: typeof AuthenticatedNotificacoesIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -248,6 +269,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedContatosIndexRoute: AuthenticatedContatosIndexRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   AuthenticatedEmpresarialIndexRoute: AuthenticatedEmpresarialIndexRoute,
+  AuthenticatedNotificacoesIndexRoute: AuthenticatedNotificacoesIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
