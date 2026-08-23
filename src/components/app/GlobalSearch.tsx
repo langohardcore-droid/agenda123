@@ -42,25 +42,6 @@ export function GlobalSearch({
             </CommandItem>
           ))}
         </CommandGroup>
-        <CommandGroup heading="Tarefas">
-          {(tasks ?? []).slice(0, 30).map((t) => (
-            <CommandItem key={t.id} value={t.title} onSelect={() => go("/tarefas")}>
-              {t.title}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-        <CommandGroup heading="Clientes e contatos">
-          {(clients ?? []).slice(0, 30).map((c) => (
-            <CommandItem
-              key={c.id}
-              value={`${c.name} ${c.company ?? ""} ${c.email ?? ""}`}
-              onSelect={() => go(c.kind === "contato" ? "/contatos" : "/clientes")}
-            >
-              <span>{c.name}</span>
-              {c.company && <span className="ml-auto text-xs text-muted-foreground">{c.company}</span>}
-            </CommandItem>
-          ))}
-        </CommandGroup>
       </CommandList>
     </CommandDialog>
   );
