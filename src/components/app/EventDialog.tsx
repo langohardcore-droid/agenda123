@@ -64,6 +64,31 @@ export function EventDialog({
   const { data: clients } = useClients();
 
   const [form, setForm] = useState(() => emptyForm());
+  const [isListening, setIsListening] = useState(false);
+
+  const startListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("Reconhecimento de voz não suportado neste navegador.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "pt-BR";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
+    
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      set("description", (prev) => prev ? `${prev}\n${transcript}` : transcript);
+    };
+
+    recognition.start();
+  };
 
   useEffect(() => {
     if (!state.open) return;
