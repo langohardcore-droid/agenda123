@@ -19,9 +19,9 @@ function Dashboard() {
   const [eventDialog, setEventDialog] = useState<EventDialogState>({ open: false });
   const [taskDialog, setTaskDialog] = useState<TaskDialogState>({ open: false });
 
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = new Date().toISOString().split("T")[0] || "";
   const todayEvents = (events || []).filter((e) => e.start_at?.startsWith(todayStr));
-  const upcomingEvents = (events || []).filter((e) => e.start_at > todayStr).slice(0, 5);
+  const upcomingEvents = (events || []).filter((e) => (e.start_at || "") > todayStr).slice(0, 5);
   const pendingTasks = (tasks || []).filter((t) => t.status !== "concluida");
   const delayedTasks = (tasks || []).filter((t) => t.status === "atrasada");
 

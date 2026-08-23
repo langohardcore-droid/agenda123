@@ -21,6 +21,7 @@ import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedEmpresarialIndexRouteImport } from './routes/_authenticated/empresarial/index'
 import { Route as AuthenticatedNotificacoesIndexRouteImport } from './routes/_authenticated/notificacoes/index'
 import { Route as AuthenticatedPessoalIndexRouteImport } from './routes/_authenticated/pessoal/index'
+import { Route as AuthenticatedTarefasIndexRouteImport } from './routes/_authenticated/tarefas/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -90,6 +91,12 @@ const AuthenticatedPessoalIndexRoute =
     path: '/pessoal/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTarefasIndexRoute =
+  AuthenticatedTarefasIndexRouteImport.update({
+    id: '/tarefas/',
+    path: '/tarefas/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/empresarial/': typeof AuthenticatedEmpresarialIndexRoute
   '/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
   '/pessoal/': typeof AuthenticatedPessoalIndexRoute
+  '/tarefas/': typeof AuthenticatedTarefasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -116,6 +124,7 @@ export interface FileRoutesByTo {
   '/empresarial': typeof AuthenticatedEmpresarialIndexRoute
   '/notificacoes': typeof AuthenticatedNotificacoesIndexRoute
   '/pessoal': typeof AuthenticatedPessoalIndexRoute
+  '/tarefas': typeof AuthenticatedTarefasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -131,6 +140,7 @@ export interface FileRoutesById {
   '/_authenticated/empresarial/': typeof AuthenticatedEmpresarialIndexRoute
   '/_authenticated/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
   '/_authenticated/pessoal/': typeof AuthenticatedPessoalIndexRoute
+  '/_authenticated/tarefas/': typeof AuthenticatedTarefasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/empresarial/'
     | '/notificacoes/'
     | '/pessoal/'
+    | '/tarefas/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '/empresarial'
     | '/notificacoes'
     | '/pessoal'
+    | '/tarefas'
   id:
     | '__root__'
     | '/'
@@ -173,6 +185,7 @@ export interface FileRouteTypes {
     | '/_authenticated/empresarial/'
     | '/_authenticated/notificacoes/'
     | '/_authenticated/pessoal/'
+    | '/_authenticated/tarefas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -267,6 +280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPessoalIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tarefas/': {
+      id: '/_authenticated/tarefas/'
+      path: '/tarefas'
+      fullPath: '/tarefas/'
+      preLoaderRoute: typeof AuthenticatedTarefasIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -280,6 +300,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEmpresarialIndexRoute: typeof AuthenticatedEmpresarialIndexRoute
   AuthenticatedNotificacoesIndexRoute: typeof AuthenticatedNotificacoesIndexRoute
   AuthenticatedPessoalIndexRoute: typeof AuthenticatedPessoalIndexRoute
+  AuthenticatedTarefasIndexRoute: typeof AuthenticatedTarefasIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -292,6 +313,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEmpresarialIndexRoute: AuthenticatedEmpresarialIndexRoute,
   AuthenticatedNotificacoesIndexRoute: AuthenticatedNotificacoesIndexRoute,
   AuthenticatedPessoalIndexRoute: AuthenticatedPessoalIndexRoute,
+  AuthenticatedTarefasIndexRoute: AuthenticatedTarefasIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
