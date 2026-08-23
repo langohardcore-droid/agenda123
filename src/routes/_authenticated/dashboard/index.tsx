@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEvents, useTasks, useProfile } from "@/lib/agenda/hooks";
+import { useEvents, useProfile } from "@/lib/agenda/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Calendar, CheckSquare, Clock, AlertTriangle } from "lucide-react";
+import { Plus, Calendar, Clock } from "lucide-react";
 import { useState } from "react";
 import { EventDialog, type EventDialogState } from "@/components/app/EventDialog";
-import { TaskDialog, type TaskDialogState } from "@/components/app/TaskDialog";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({
   component: Dashboard,
@@ -13,17 +13,15 @@ export const Route = createFileRoute("/_authenticated/dashboard/")({
 
 function Dashboard() {
   const { data: events = [] } = useEvents();
-  const { data: tasks = [] } = useTasks();
+  
   const { data: profile } = useProfile();
   
   const [eventDialog, setEventDialog] = useState<EventDialogState>({ open: false });
-  const [taskDialog, setTaskDialog] = useState<TaskDialogState>({ open: false });
+  
 
   const todayStr = new Date().toISOString().split("T")[0] || "";
   const todayEvents = (events || []).filter((e) => e.start_at?.startsWith(todayStr));
   const upcomingEvents = (events || []).filter((e) => (e.start_at || "") > todayStr).slice(0, 5);
-  const pendingTasks = (tasks || []).filter((t) => t.status !== "concluida");
-  const delayedTasks = (tasks || []).filter((t) => t.status === "atrasada");
 
   return (
     <div className="space-y-8">
@@ -94,7 +92,7 @@ function Dashboard() {
       </div>
 
       <EventDialog state={eventDialog} onOpenChange={(open) => setEventDialog(s => ({ ...s, open }))} />
-      <TaskDialog state={taskDialog} onOpenChange={(open) => setTaskDialog(s => ({ ...s, open }))} />
+      
     </div>
   );
 }
