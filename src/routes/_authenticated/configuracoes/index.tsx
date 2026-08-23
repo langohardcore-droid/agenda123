@@ -168,6 +168,8 @@ function SettingsPage() {
               />
             </div>
           </CardContent>
+        </Card>
+
         <Card className="surface border-none">
           <CardHeader className="flex flex-row items-center gap-4 pb-2">
             <div className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
