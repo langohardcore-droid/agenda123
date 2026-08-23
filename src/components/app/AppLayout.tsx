@@ -42,9 +42,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
   }, [profile?.theme]);
 
   async function signOut() {
+    localStorage.removeItem("agenda_pro_auth");
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
 
