@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { Trash2, Mic, MicOff, Loader2, Sparkles } from "lucide-react";
+import { Trash2, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useClients, useDeleteEvent, useSaveEvent } from "@/lib/agenda/hooks";
-import { processSpeech } from "@/lib/agenda/speech-processor.functions";
+
 import { useServerFn } from "@tanstack/react-start";
 import {
   CATEGORIES,
@@ -67,101 +67,7 @@ export function EventDialog({
   const { data: clients } = useClients();
 
   const [form, setForm] = useState(() => emptyForm());
-  const [isListening, setIsListening] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [recognition, setRecognition] = useState<any>(null);
-  const runProcessSpeech = useServerFn(processSpeech);
 
-  const startListening = () => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      toast.error("Reconhecimento de voz não suportado neste navegador.");
-      return;
-    }
-
-    const reco = new SpeechRecognition();
-    reco.lang = "pt-BR";
-    reco.interimResults = false;
-    reco.maxAlternatives = 1;
-    reco.continuous = true;
-    reco.interimResults = true;
-
-    let finalTranscript = "";
-
-    reco.onstart = () => {
-      setIsListening(true);
-      finalTranscript = "";
-    };
-    reco.onend = () => setIsListening(false);
-    reco.onerror = (event: any) => {
-      console.error("Speech recognition error", event.error);
-      setIsListening(false);
-    };
-    
-    reco.onresult = async (event: any) => {
-      let interimTranscript = "";
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          interimTranscript += event.results[i][0].transcript;
-        }
-      }
-      
-      const transcript = finalTranscript || interimTranscript;
-      if (!transcript) return;
-      
-      (reco as any).lastTranscript = transcript;
-    };
-
-    reco.start();
-    setRecognition(reco);
-  };
-
-  const stopListening = async () => {
-    if (recognition) {
-      const transcript = recognition.lastTranscript;
-      recognition.stop();
-      setRecognition(null);
-
-      if (transcript) {
-        setIsProcessing(true);
-        try {
-          const result = await runProcessSpeech({
-            data: {
-              text: transcript,
-              contextDate: new Date().toISOString()
-            }
-          });
-          
-          setForm(prev => ({
-            ...prev,
-            title: result.title || prev.title,
-            description: result.description || prev.description,
-            scope: result.scope || prev.scope,
-            category: result.category || prev.category,
-            date: result.date || prev.date,
-            startTime: result.startTime || prev.startTime,
-            endTime: result.endTime || prev.endTime,
-            location: result.location || prev.location,
-            responsible: result.responsible || prev.responsible,
-            priority: result.priority || prev.priority,
-          }));
-          
-          toast.success("Comando processado com sucesso!");
-        } catch (error) {
-          console.error("Speech processing error:", error);
-          toast.error("Não entendi bem o comando. Preenchendo a descrição...");
-          setForm(prev => ({ 
-            ...prev, 
-            description: prev.description ? `${prev.description}\n${transcript}` : transcript 
-          }));
-        } finally {
-          setIsProcessing(false);
-        }
-      }
-    }
-  };
 
   useEffect(() => {
     if (!state.open) return;
@@ -264,44 +170,16 @@ export function EventDialog({
           </div>
 
           <div className="sm:col-span-2">
-            <div className="mb-2 flex items-center justify-between">
+            <div className="mb-2">
               <Label htmlFor="desc">Descrição</Label>
-              <Button 
-                type="button"
-                variant="ghost" 
-                size="sm" 
-                className={`h-8 gap-2 rounded-full px-3 transition-all ${isListening ? 'scale-110 bg-red-500 text-white hover:bg-red-600' : 'hover:bg-accent'}`}
-                onMouseDown={startListening}
-                onMouseUp={stopListening}
-                onMouseLeave={stopListening}
-                onTouchStart={(e) => { e.preventDefault(); startListening(); }}
-                onTouchEnd={stopListening}
-                disabled={isProcessing}
-              >
-                {isProcessing ? (
-                  <>
-                    <Sparkles className="size-4 animate-pulse text-blue-500" />
-                    Processando...
-                  </>
-                ) : isListening ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
-                    Ouvindo...
-                  </>
-                ) : (
-                  <>
-                    <Mic className="size-4" />
-                    Comando de Voz
-                  </>
-                )}
-              </Button>
             </div>
+
             <Textarea
               id="desc"
               value={form.description}
               maxLength={2000}
               onChange={(e) => set("description", e.target.value)}
-              placeholder="Digite ou use o comando de voz para descrever o compromisso..."
+              placeholder="Descreva o compromisso..."
               className="min-h-[120px]"
             />
           </div>
