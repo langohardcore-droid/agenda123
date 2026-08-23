@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
-import { User, Shield, Bell, Palette, Globe, Save } from "lucide-react";
+import { User, Shield, Bell, Palette, Globe, Save, Lock } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/configuracoes/")({
   component: SettingsPage,
@@ -30,14 +30,15 @@ function SettingsPage() {
 
   useEffect(() => {
     if (profile) {
-      setForm({
+      setForm(prev => ({
+        ...prev,
         full_name: profile.full_name || "",
         company: profile.company || "",
         work_start: profile.work_start || "09:00",
         work_end: profile.work_end || "18:00",
         theme: profile.theme || "light",
         notify_in_app: profile.notify_in_app ?? true,
-      });
+      }));
     }
   }, [profile]);
 
