@@ -3,68 +3,66 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { UserPlus, Shield, User, Loader2, Trash2 } from "lucide-react";
+import { Shield, User, Loader2, Trash2 } from "lucide-react";
 import { useRoles } from "@/lib/agenda/hooks";
+import { Database } from "@/integrations/supabase/types";
 
 export const Route = createFileRoute("/_authenticated/configuracoes/usuarios")({
   component: UserManagementPage,
 });
+
+type AppRole = Database["public"]["Enums"]["app_role"];
+
+interface UserWithRole {
+  user_id: string;
+  full_name: string;
+  role: AppRole;
+}
 
 function UserManagementPage() {
   const { data: roles } = useRoles();
   const isAdmin = roles?.includes("admin");
   const qc = useQueryClient();
   
-  const [email, setEmail] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [role, setRole] = useState<"admin" | "moderator" | "user">("user");
-  const [isCreating, setIsCreating] = useState(false);
-
-  // Busca todos os perfis e seus papéis
-  const { data: users, isLoading } = useQuery({
+  const { data: users, isLoading } = useQuery<UserWithRole[]>({
     queryKey: ["admin-users"],
-    enabled: isAdmin,
+    enabled: !!isAdmin,
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Busca perfis
+      const { data: profiles, error: pError } = await supabase
         .from("profiles")
-        .select(`
-          user_id,
-          full_name,
-          user_roles (
-            role
-          )
-        `);
-      if (error) throw error;
-      return data;
+        .select("user_id, full_name");
+      
+      if (pError) throw pError;
+
+      // Busca papéis
+      const { data: userRoles, error: rError } = await supabase
+        .from("user_roles")
+        .select("user_id, role");
+      
+      if (rError) throw rError;
+
+      // Mapeia os dados
+      return profiles.map(p => ({
+        user_id: p.user_id,
+        full_name: p.full_name,
+        role: userRoles.find(r => r.user_id === p.user_id)?.role || "pessoal"
+      }));
     },
   });
 
-  const createUser = useMutation({
-    mutationFn: async () => {
-      // Nota: No Supabase padrão, criar um usuário via cliente não é possível sem a Service Role Key
-      // ou se o Admin Auth for configurado. Em Lovable Cloud, usaremos o fluxo de convite
-      // ou simulação via banco se o usuário tiver permissão.
-      // Para manter "Simples" como pedido, vamos orientar que novos usuários entram via Google 
-      // e o ADM apenas gerencia os papéis aqui.
-      
-      toast.info("Para manter a segurança, novos usuários devem entrar via Google. Use esta tela para ajustar permissões de quem já entrou.");
-    }
-  });
-
   const updateRole = useMutation({
-    mutationFn: async ({ userId, newRole }: { userId: string, newRole: string }) => {
-      // Primeiro remove papéis antigos
+    mutationFn: async ({ userId, newRole }: { userId: string, newRole: AppRole }) => {
+      // Primeiro remove papéis antigos para este usuário
       await supabase.from("user_roles").delete().eq("user_id", userId);
       // Adiciona o novo papel
       const { error } = await supabase.from("user_roles").insert({
         user_id: userId,
-        role: newRole as any
+        role: newRole
       });
       if (error) throw error;
     },
@@ -124,16 +122,16 @@ function UserManagementPage() {
                       <TableCell className="font-medium">{u.full_name || "Sem nome"}</TableCell>
                       <TableCell>
                         <Select 
-                          defaultValue={u.user_roles?.[0]?.role || "user"} 
-                          onValueChange={(val) => updateRole.mutate({ userId: u.user_id, newRole: val })}
+                          defaultValue={u.role} 
+                          onValueChange={(val) => updateRole.mutate({ userId: u.user_id, newRole: val as AppRole })}
                         >
-                          <SelectTrigger className="w-32 h-8">
+                          <SelectTrigger className="w-40 h-8">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="admin">Administrador</SelectItem>
-                            <SelectItem value="moderator">Funcionário</SelectItem>
-                            <SelectItem value="user">Pessoal</SelectItem>
+                            <SelectItem value="funcionario">Funcionário</SelectItem>
+                            <SelectItem value="pessoal">Pessoal</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
@@ -156,8 +154,7 @@ function UserManagementPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Como o sistema utiliza o Login do Google para maior simplicidade e segurança, 
-              basta pedir para o novo usuário entrar uma vez no sistema. 
+              Como o sistema utiliza o Login do Google, basta pedir para o novo usuário entrar uma vez no sistema. 
               Ele aparecerá automaticamente nesta lista, onde você poderá elevá-lo a <strong>Administrador</strong> ou <strong>Funcionário</strong>.
             </p>
           </CardContent>
