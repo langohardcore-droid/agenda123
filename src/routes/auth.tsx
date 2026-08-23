@@ -32,12 +32,12 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <CalendarDays className="h-8 w-8" />
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg">
+            <CalendarDays className="h-10 w-10" />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold tracking-tight text-foreground">Agenda Pro</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sua vida pessoal e profissional em um só lugar.
+            A agenda de Jessica & Anderson.
           </p>
         </div>
 
