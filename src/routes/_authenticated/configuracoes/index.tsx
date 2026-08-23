@@ -24,6 +24,8 @@ function SettingsPage() {
     work_end: "18:00",
     theme: "light",
     notify_in_app: true,
+    login_user: "agendapro",
+    login_pass: "73829155640",
   });
 
   useEffect(() => {
@@ -166,7 +168,37 @@ function SettingsPage() {
               />
             </div>
           </CardContent>
+        <Card className="surface border-none">
+          <CardHeader className="flex flex-row items-center gap-4 pb-2">
+            <div className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
+              <Lock className="size-5" />
+            </div>
+            <div>
+              <CardTitle>Acesso</CardTitle>
+              <CardDescription>Gerencie suas credenciais de login.</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="grid gap-4 mt-4">
+            <div className="grid gap-2">
+              <Label htmlFor="login_user">Usuário</Label>
+              <Input 
+                id="login_user" 
+                value={form.login_user} 
+                onChange={(e) => setForm({...form, login_user: e.target.value})}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="login_pass">Senha</Label>
+              <Input 
+                id="login_pass" 
+                type="password"
+                value={form.login_pass} 
+                onChange={(e) => setForm({...form, login_pass: e.target.value})}
+              />
+            </div>
+          </CardContent>
         </Card>
+
 
         <div className="flex justify-end pt-4">
           <Button onClick={handleSave} className="rounded-xl w-full sm:w-auto" disabled={update.isPending}>
