@@ -34,6 +34,7 @@ const NAV = [
   { to: "/pessoal", label: "Agenda Pessoal", icon: Heart },
   { to: "/notificacoes", label: "Notificações", icon: Bell },
   { to: "/configuracoes", label: "Configurações", icon: Settings },
+  { to: "/configuracoes/usuarios", label: "Gestão de Usuários", icon: Users, adminOnly: true },
 ] as const;
 
 export function AppLayout({ children }: { children: ReactNode }) {
@@ -78,6 +79,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
       <nav className="flex-1 space-y-1 overflow-y-auto">
         {NAV.map((item) => {
+          if ("adminOnly" in item && item.adminOnly && !roles?.includes("admin")) return null;
           const active = pathname === item.to;
           return (
             <Link
