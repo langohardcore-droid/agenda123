@@ -18,6 +18,7 @@ import { Route as AuthenticatedCompromissosIndexRouteImport } from './routes/_au
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated/configuracoes/index'
 import { Route as AuthenticatedContatosIndexRouteImport } from './routes/_authenticated/contatos/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
+import { Route as AuthenticatedEmpresarialIndexRouteImport } from './routes/_authenticated/empresarial/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -69,6 +70,12 @@ const AuthenticatedDashboardIndexRoute =
     path: '/dashboard/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedEmpresarialIndexRoute =
+  AuthenticatedEmpresarialIndexRouteImport.update({
+    id: '/empresarial/',
+    path: '/empresarial/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/contatos/': typeof AuthenticatedContatosIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/empresarial/': typeof AuthenticatedEmpresarialIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -89,6 +97,7 @@ export interface FileRoutesByTo {
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
   '/contatos': typeof AuthenticatedContatosIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/empresarial': typeof AuthenticatedEmpresarialIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -101,6 +110,7 @@ export interface FileRoutesById {
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/_authenticated/contatos/': typeof AuthenticatedContatosIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/_authenticated/empresarial/': typeof AuthenticatedEmpresarialIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -113,6 +123,7 @@ export interface FileRouteTypes {
     | '/configuracoes/'
     | '/contatos/'
     | '/dashboard/'
+    | '/empresarial/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -123,6 +134,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/contatos'
     | '/dashboard'
+    | '/empresarial'
   id:
     | '__root__'
     | '/'
@@ -134,6 +146,7 @@ export interface FileRouteTypes {
     | '/_authenticated/configuracoes/'
     | '/_authenticated/contatos/'
     | '/_authenticated/dashboard/'
+    | '/_authenticated/empresarial/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -207,6 +220,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/empresarial/': {
+      id: '/_authenticated/empresarial/'
+      path: '/empresarial'
+      fullPath: '/empresarial/'
+      preLoaderRoute: typeof AuthenticatedEmpresarialIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -217,6 +237,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedConfiguracoesIndexRoute: typeof AuthenticatedConfiguracoesIndexRoute
   AuthenticatedContatosIndexRoute: typeof AuthenticatedContatosIndexRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+  AuthenticatedEmpresarialIndexRoute: typeof AuthenticatedEmpresarialIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -226,6 +247,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConfiguracoesIndexRoute: AuthenticatedConfiguracoesIndexRoute,
   AuthenticatedContatosIndexRoute: AuthenticatedContatosIndexRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+  AuthenticatedEmpresarialIndexRoute: AuthenticatedEmpresarialIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
