@@ -73,6 +73,19 @@ function Dashboard() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={startListening}
+            className={`rounded-xl ${isListening ? 'animate-pulse border-red-200 bg-red-50 text-red-600' : ''}`}
+            disabled={isListening}
+          >
+            {isListening ? (
+              <Loader2 className="mr-2 size-4 animate-spin" />
+            ) : (
+              <Mic className="mr-2 size-4" />
+            )}
+            {isListening ? "Ouvindo..." : "Voz"}
+          </Button>
           <Button onClick={() => setEventDialog({ open: true })} className="rounded-xl">
             <Plus className="mr-2 size-4" /> Novo compromisso
           </Button>
