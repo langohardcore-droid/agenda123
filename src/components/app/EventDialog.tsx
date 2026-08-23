@@ -159,6 +159,19 @@ export function EventDialog({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
+            <Label>Responsável</Label>
+            <Select value={form.responsible} onValueChange={(v) => set("responsible", v)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o responsável" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Jessica">Jessica</SelectItem>
+                <SelectItem value="Anderson">Anderson</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="sm:col-span-2">
             <Label htmlFor="title">Título</Label>
             <Input
               id="title"
@@ -271,18 +284,6 @@ export function EventDialog({
             </Select>
           </div>
 
-          <div>
-            <Label>Responsável</Label>
-            <Select value={form.responsible} onValueChange={(v) => set("responsible", v)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o responsável" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Jessica">Jessica</SelectItem>
-                <SelectItem value="Anderson">Anderson</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
 
           <div>
             <Label>Prioridade</Label>
