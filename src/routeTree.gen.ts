@@ -20,6 +20,7 @@ import { Route as AuthenticatedContatosIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 import { Route as AuthenticatedEmpresarialIndexRouteImport } from './routes/_authenticated/empresarial/index'
 import { Route as AuthenticatedNotificacoesIndexRouteImport } from './routes/_authenticated/notificacoes/index'
+import { Route as AuthenticatedPessoalIndexRouteImport } from './routes/_authenticated/pessoal/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -83,6 +84,12 @@ const AuthenticatedNotificacoesIndexRoute =
     path: '/notificacoes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPessoalIndexRoute =
+  AuthenticatedPessoalIndexRouteImport.update({
+    id: '/pessoal/',
+    path: '/pessoal/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/empresarial/': typeof AuthenticatedEmpresarialIndexRoute
   '/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
+  '/pessoal/': typeof AuthenticatedPessoalIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -107,6 +115,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/empresarial': typeof AuthenticatedEmpresarialIndexRoute
   '/notificacoes': typeof AuthenticatedNotificacoesIndexRoute
+  '/pessoal': typeof AuthenticatedPessoalIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -121,6 +130,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/empresarial/': typeof AuthenticatedEmpresarialIndexRoute
   '/_authenticated/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
+  '/_authenticated/pessoal/': typeof AuthenticatedPessoalIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/empresarial/'
     | '/notificacoes/'
+    | '/pessoal/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/empresarial'
     | '/notificacoes'
+    | '/pessoal'
   id:
     | '__root__'
     | '/'
@@ -160,6 +172,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/'
     | '/_authenticated/empresarial/'
     | '/_authenticated/notificacoes/'
+    | '/_authenticated/pessoal/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -247,6 +260,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNotificacoesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pessoal/': {
+      id: '/_authenticated/pessoal/'
+      path: '/pessoal'
+      fullPath: '/pessoal/'
+      preLoaderRoute: typeof AuthenticatedPessoalIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -259,6 +279,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedEmpresarialIndexRoute: typeof AuthenticatedEmpresarialIndexRoute
   AuthenticatedNotificacoesIndexRoute: typeof AuthenticatedNotificacoesIndexRoute
+  AuthenticatedPessoalIndexRoute: typeof AuthenticatedPessoalIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -270,6 +291,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   AuthenticatedEmpresarialIndexRoute: AuthenticatedEmpresarialIndexRoute,
   AuthenticatedNotificacoesIndexRoute: AuthenticatedNotificacoesIndexRoute,
+  AuthenticatedPessoalIndexRoute: AuthenticatedPessoalIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
