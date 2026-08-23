@@ -2,10 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEvents, useProfile } from "@/lib/agenda/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Calendar, Clock, Mic, Loader2 } from "lucide-react";
+import { Plus, Calendar, Clock, Mic, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { EventDialog, type EventDialogState } from "@/components/app/EventDialog";
+import { processSpeech } from "@/lib/agenda/speech-processor.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({
@@ -19,6 +21,8 @@ function Dashboard() {
   
   const [eventDialog, setEventDialog] = useState<EventDialogState>({ open: false });
   const [isListening, setIsListening] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const runProcessSpeech = useServerFn(processSpeech);
 
   const startListening = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -36,21 +40,31 @@ function Dashboard() {
     recognition.onend = () => setIsListening(false);
     recognition.onerror = () => setIsListening(false);
     
-    recognition.onresult = (event: any) => {
+    recognition.onresult = async (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setEventDialog({
-        open: true,
-        event: null,
-        // We'll pass the transcript to the dialog via a custom field or by initializing the form
-        // For now, let's just open the dialog and we might need to update EventDialog to accept initial description
-      });
-      // To properly handle this, I should ideally update EventDialog to accept an initial description
-      // But a quick way is to use a custom property in EventDialogState
-      setEventDialog({
-        open: true,
-        event: null,
-        initialDescription: transcript
-      } as any);
+      setIsProcessing(true);
+      try {
+        await runProcessSpeech({ 
+          data: {
+            text: transcript,
+            contextDate: new Date().toISOString()
+          }
+        });
+        
+        setEventDialog({
+          open: true,
+          event: null,
+          initialDescription: transcript
+        } as any);
+      } catch (error) {
+        setEventDialog({
+          open: true,
+          event: null,
+          initialDescription: transcript
+        } as any);
+      } finally {
+        setIsProcessing(false);
+      }
     };
 
     recognition.start();
@@ -76,15 +90,17 @@ function Dashboard() {
           <Button 
             variant="outline" 
             onClick={startListening}
-            className={`rounded-xl ${isListening ? 'animate-pulse border-red-200 bg-red-50 text-red-600' : ''}`}
-            disabled={isListening}
+            className={`rounded-xl ${isListening ? 'animate-pulse border-red-200 bg-red-50 text-red-600' : ''} ${isProcessing ? 'animate-pulse border-blue-200 bg-blue-50 text-blue-600' : ''}`}
+            disabled={isListening || isProcessing}
           >
-            {isListening ? (
+            {isProcessing ? (
+              <Sparkles className="mr-2 size-4 animate-pulse text-blue-500" />
+            ) : isListening ? (
               <Loader2 className="mr-2 size-4 animate-spin" />
             ) : (
               <Mic className="mr-2 size-4" />
             )}
-            {isListening ? "Ouvindo..." : "Voz"}
+            {isProcessing ? "Processando..." : isListening ? "Ouvindo..." : "Voz"}
           </Button>
           <Button onClick={() => setEventDialog({ open: true })} className="rounded-xl">
             <Plus className="mr-2 size-4" /> Novo compromisso
