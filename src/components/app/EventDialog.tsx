@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { Trash2 } from "lucide-react";
+import { Trash2, Mic, MicOff, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
