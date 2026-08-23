@@ -77,29 +77,26 @@ export function EventDialog({
         title: e.title,
         description: e.description ?? "",
         scope: e.scope,
-        category: e.category,
+        category: "empresa",
         date: format(new Date(e.start_at), "yyyy-MM-dd"),
-        startTime: format(new Date(e.start_at), "HH:mm"),
-        endTime: format(new Date(e.end_at), "HH:mm"),
+        startTime: "09:00",
+        endTime: "10:00",
         location: e.location ?? "",
-        client_id: e.client_id ?? NONE,
+        client_id: NONE,
         responsible: e.responsible ?? "",
-        priority: e.priority,
-        status: e.status,
-        notes: e.notes ?? "",
-        recurrence: e.recurrence,
-        recurrence_interval: String(e.recurrence_interval ?? 1),
-        recurrence_end: e.recurrence_end ?? "",
+        priority: "media",
+        status: "agendado",
+        notes: "",
+        recurrence: "nao",
+        recurrence_interval: "1",
+        recurrence_end: "",
         reminder: e.reminder_minutes ? String(e.reminder_minutes) : NONE,
       });
     } else {
       const base = state.start ?? new Date();
       const f = emptyForm();
       f.date = format(base, "yyyy-MM-dd");
-      f.startTime = format(base, "HH:mm");
-      f.endTime = format(new Date(base.getTime() + 3600000), "HH:mm");
       f.scope = state.scope ?? "empresa";
-      f.category = state.scope === "pessoal" ? "pessoal" : "empresa";
       if (state.initialDescription) {
         f.description = state.initialDescription;
       }
@@ -119,29 +116,24 @@ export function EventDialog({
       toast.error("Informe o título do compromisso");
       return;
     }
-    const start = new Date(`${form.date}T${form.startTime}`);
-    const end = new Date(`${form.date}T${form.endTime}`);
-    if (end <= start) {
-      toast.error("O horário final deve ser maior que o inicial");
-      return;
-    }
+    const start = new Date(`${form.date}T09:00:00`);
+    const end = new Date(`${form.date}T10:00:00`);
     await save.mutateAsync({
       ...(state.event ? { id: state.event.id } : {}),
       title: form.title.trim().slice(0, 140),
       description: form.description.trim().slice(0, 2000) || null,
       scope: form.scope,
-      category: form.category,
+      category: "empresa",
       start_at: start.toISOString(),
       end_at: end.toISOString(),
       location: form.location.trim() || null,
-      client_id: form.client_id === NONE ? null : form.client_id,
       responsible: form.responsible.trim() || null,
-      priority: form.priority,
-      status: form.status,
-      notes: form.notes.trim() || null,
-      recurrence: form.recurrence,
-      recurrence_interval: Number(form.recurrence_interval) || 1,
-      recurrence_end: form.recurrence === "nao" ? null : form.recurrence_end || null,
+      priority: "media",
+      status: "agendado",
+      notes: null,
+      recurrence: "nao",
+      recurrence_interval: 1,
+      recurrence_end: null,
       reminder_minutes: form.reminder === NONE ? null : Number(form.reminder),
     });
     onOpenChange(false);
@@ -210,21 +202,6 @@ export function EventDialog({
             </Select>
           </div>
 
-          <div>
-            <Label>Categoria</Label>
-            <Select value={form.category} onValueChange={(v) => set("category", v)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CATEGORIES.map((c) => (
-                  <SelectItem key={c.value} value={c.value}>
-                    {c.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
           <div>
             <Label htmlFor="date">Data</Label>
@@ -236,26 +213,6 @@ export function EventDialog({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label htmlFor="st">Hora inicial</Label>
-              <Input
-                id="st"
-                type="time"
-                value={form.startTime}
-                onChange={(e) => set("startTime", e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="et">Hora final</Label>
-              <Input
-                id="et"
-                type="time"
-                value={form.endTime}
-                onChange={(e) => set("endTime", e.target.value)}
-              />
-            </div>
-          </div>
 
           <div>
             <Label htmlFor="loc">Local</Label>
@@ -266,98 +223,9 @@ export function EventDialog({
             />
           </div>
 
-          <div>
-            <Label>Cliente / contato</Label>
-            <Select value={form.client_id} onValueChange={(v) => set("client_id", v)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Nenhum" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NONE}>Nenhum</SelectItem>
-                {(clients ?? []).map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.name}
-                    {c.company ? ` — ${c.company}` : ""}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
 
-          <div>
-            <Label>Prioridade</Label>
-            <Select value={form.priority} onValueChange={(v) => set("priority", v as never)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PRIORITIES.map((p) => (
-                  <SelectItem key={p.value} value={p.value}>
-                    {p.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
-          <div>
-            <Label>Status</Label>
-            <Select value={form.status} onValueChange={(v) => set("status", v as never)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {EVENT_STATUS.map((s) => (
-                  <SelectItem key={s.value} value={s.value}>
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label>Recorrência</Label>
-            <Select value={form.recurrence} onValueChange={(v) => set("recurrence", v as never)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {RECURRENCES.map((r) => (
-                  <SelectItem key={r.value} value={r.value}>
-                    {r.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {form.recurrence !== "nao" && (
-            <>
-              {form.recurrence === "personalizado" && (
-                <div>
-                  <Label htmlFor="int">Repetir a cada (dias)</Label>
-                  <Input
-                    id="int"
-                    type="number"
-                    min={1}
-                    value={form.recurrence_interval}
-                    onChange={(e) => set("recurrence_interval", e.target.value)}
-                  />
-                </div>
-              )}
-              <div>
-                <Label htmlFor="rend">Repetir até</Label>
-                <Input
-                  id="rend"
-                  type="date"
-                  value={form.recurrence_end}
-                  onChange={(e) => set("recurrence_end", e.target.value)}
-                />
-              </div>
-            </>
-          )}
 
           <div>
             <Label>Lembrete</Label>
@@ -376,15 +244,6 @@ export function EventDialog({
             </Select>
           </div>
 
-          <div className="sm:col-span-2">
-            <Label htmlFor="obs">Observações</Label>
-            <Textarea
-              id="obs"
-              value={form.notes}
-              maxLength={2000}
-              onChange={(e) => set("notes", e.target.value)}
-            />
-          </div>
         </div>
 
         <DialogFooter className="gap-2 sm:justify-between">

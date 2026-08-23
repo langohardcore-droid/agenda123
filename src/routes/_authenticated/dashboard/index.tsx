@@ -76,8 +76,7 @@ function Dashboard() {
               jessicaEvents.map((event) => (
                 <div key={event.id} className="flex items-center gap-3 rounded-lg border p-3">
                   <div
-                    className="size-2 rounded-full"
-                    style={{ backgroundColor: `var(--cat-${event.category})` }}
+                    className="size-2 rounded-full bg-primary"
                   />
                   <div className="flex-1">
                     <p className="text-sm font-medium">{event.title}</p>
@@ -102,8 +101,7 @@ function Dashboard() {
               andersonEvents.map((event) => (
                 <div key={event.id} className="flex items-center gap-3 rounded-lg border p-3">
                   <div
-                    className="size-2 rounded-full"
-                    style={{ backgroundColor: `var(--cat-${event.category})` }}
+                    className="size-2 rounded-full bg-primary"
                   />
                   <div className="flex-1">
                     <p className="text-sm font-medium">{event.title}</p>

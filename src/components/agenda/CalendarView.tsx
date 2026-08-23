@@ -98,7 +98,6 @@ export function CalendarView({ events, onSelectEvent, onSelectSlot }: CalendarPr
 
               <div className="mt-2 space-y-1">
                 {dayEvents.slice(0, 3).map((event) => {
-                  const p = palette(event.category);
                   return (
                     <div
                       key={event.id}
@@ -107,8 +106,7 @@ export function CalendarView({ events, onSelectEvent, onSelectSlot }: CalendarPr
                         onSelectEvent(event);
                       }}
                       className={cn(
-                        "truncate rounded px-1.5 py-0.5 text-[10px] font-medium transition-opacity hover:opacity-80",
-                        p.chip,
+                        "truncate rounded px-1.5 py-0.5 text-[10px] font-medium transition-opacity hover:opacity-80 bg-primary/10 text-primary border border-primary/20",
                       )}
                     >
                       {event.title}
