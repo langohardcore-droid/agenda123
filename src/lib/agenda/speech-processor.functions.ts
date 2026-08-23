@@ -6,13 +6,24 @@ const speechInputSchema = z.object({
   contextDate: z.string().optional(),
 });
 
+export interface SpeechResult {
+  title?: string;
+  description?: string;
+  scope?: "empresa" | "pessoal";
+  category?: string;
+  date?: string;
+  startTime?: string;
+  endTime?: string;
+  location?: string | null;
+  responsible?: string;
+  priority?: "baixa" | "media" | "alta" | "urgente";
+}
+
 export const processSpeech = createServerFn({ method: "POST" })
   .inputValidator((data) => speechInputSchema.parse(data))
   .handler(async ({ data }) => {
-    // @ts-ignore - ai-gateway might not have local types but is available in the runtime
-    const { aiGateway } = await import("@lovable.dev/ai-gateway");
-    
     const now = data.contextDate || new Date().toISOString();
+
     
     const prompt = `
 Você é um assistente de agenda inteligente para Jessica e Anderson.
@@ -54,19 +65,28 @@ Retorne APENAS o JSON no formato:
 `;
 
     try {
-      const response = await aiGateway.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "Você é um extrator de dados de agenda. Retorne apenas JSON." },
-          { role: "user", content: prompt }
-        ],
-        response_format: { type: "json_object" }
+      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env["LOVABLE_API_KEY"]}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-3-flash-preview",
+          messages: [
+            { role: "system", content: "Você é um extrator de dados de agenda. Retorne apenas JSON válido, sem markdown." },
+            { role: "user", content: prompt },
+          ],
+        }),
       });
 
-      const content = response.choices[0].message.content;
+      if (!res.ok) throw new Error(`AI gateway ${res.status}`);
+      const json = (await res.json()) as any;
+      const content: string | undefined = json?.choices?.[0]?.message?.content;
       if (!content) throw new Error("Falha ao processar áudio");
-      
-      return JSON.parse(content);
+
+      const cleaned = content.replace(/```json|```/g, "").trim();
+      return JSON.parse(cleaned) as SpeechResult;
     } catch (error) {
       console.error("Erro no processSpeech:", error);
       throw new Error("Não foi possível entender o comando de voz. Tente novamente.");
