@@ -16,6 +16,7 @@ import { Route as AuthenticatedAgendaIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedClientesIndexRouteImport } from './routes/_authenticated/clientes/index'
 import { Route as AuthenticatedCompromissosIndexRouteImport } from './routes/_authenticated/compromissos/index'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated/configuracoes/index'
+import { Route as AuthenticatedContatosIndexRouteImport } from './routes/_authenticated/contatos/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -56,6 +57,12 @@ const AuthenticatedConfiguracoesIndexRoute =
     path: '/configuracoes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedContatosIndexRoute =
+  AuthenticatedContatosIndexRouteImport.update({
+    id: '/contatos/',
+    path: '/contatos/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -70,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/clientes/': typeof AuthenticatedClientesIndexRoute
   '/compromissos/': typeof AuthenticatedCompromissosIndexRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
+  '/contatos/': typeof AuthenticatedContatosIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -79,6 +87,7 @@ export interface FileRoutesByTo {
   '/clientes': typeof AuthenticatedClientesIndexRoute
   '/compromissos': typeof AuthenticatedCompromissosIndexRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
+  '/contatos': typeof AuthenticatedContatosIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -90,6 +99,7 @@ export interface FileRoutesById {
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
   '/_authenticated/compromissos/': typeof AuthenticatedCompromissosIndexRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
+  '/_authenticated/contatos/': typeof AuthenticatedContatosIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
@@ -101,6 +111,7 @@ export interface FileRouteTypes {
     | '/clientes/'
     | '/compromissos/'
     | '/configuracoes/'
+    | '/contatos/'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -110,6 +121,7 @@ export interface FileRouteTypes {
     | '/clientes'
     | '/compromissos'
     | '/configuracoes'
+    | '/contatos'
     | '/dashboard'
   id:
     | '__root__'
@@ -120,6 +132,7 @@ export interface FileRouteTypes {
     | '/_authenticated/clientes/'
     | '/_authenticated/compromissos/'
     | '/_authenticated/configuracoes/'
+    | '/_authenticated/contatos/'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConfiguracoesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/contatos/': {
+      id: '/_authenticated/contatos/'
+      path: '/contatos'
+      fullPath: '/contatos/'
+      preLoaderRoute: typeof AuthenticatedContatosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/dashboard'
@@ -195,6 +215,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
   AuthenticatedCompromissosIndexRoute: typeof AuthenticatedCompromissosIndexRoute
   AuthenticatedConfiguracoesIndexRoute: typeof AuthenticatedConfiguracoesIndexRoute
+  AuthenticatedContatosIndexRoute: typeof AuthenticatedContatosIndexRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
@@ -203,6 +224,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
   AuthenticatedCompromissosIndexRoute: AuthenticatedCompromissosIndexRoute,
   AuthenticatedConfiguracoesIndexRoute: AuthenticatedConfiguracoesIndexRoute,
+  AuthenticatedContatosIndexRoute: AuthenticatedContatosIndexRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
 }
 
