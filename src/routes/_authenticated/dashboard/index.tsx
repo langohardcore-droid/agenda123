@@ -37,8 +37,14 @@ function Dashboard() {
     reco.interimResults = false;
     reco.maxAlternatives = 1;
     reco.continuous = true;
+    reco.interimResults = true;
 
-    reco.onstart = () => setIsListening(true);
+    let finalTranscript = "";
+
+    reco.onstart = () => {
+      setIsListening(true);
+      finalTranscript = "";
+    };
     reco.onend = () => setIsListening(false);
     reco.onerror = (event: any) => {
       console.error("Speech recognition error", event.error);
@@ -46,43 +52,62 @@ function Dashboard() {
     };
     
     reco.onresult = async (event: any) => {
-      const transcript = Array.from(event.results)
-        .map((result: any) => result[0].transcript)
-        .join(" ");
-      
-      setIsProcessing(true);
-      try {
-        await runProcessSpeech({ 
-          data: {
-            text: transcript,
-            contextDate: new Date().toISOString()
-          }
-        });
-        
-        setEventDialog({
-          open: true,
-          event: null,
-          initialDescription: transcript
-        } as any);
-      } catch (error) {
-        setEventDialog({
-          open: true,
-          event: null,
-          initialDescription: transcript
-        } as any);
-      } finally {
-        setIsProcessing(false);
+      let interimTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
       }
+      
+      const transcript = finalTranscript || interimTranscript;
+      if (!transcript) return;
+      
+      (reco as any).lastTranscript = transcript;
     };
 
     reco.start();
     setRecognition(reco);
   };
 
-  const stopListening = () => {
+  const stopListening = async () => {
     if (recognition) {
+      const transcript = recognition.lastTranscript;
       recognition.stop();
       setRecognition(null);
+      
+      if (transcript) {
+        setIsProcessing(true);
+        try {
+          const result = await runProcessSpeech({ 
+            data: {
+              text: transcript,
+              contextDate: new Date().toISOString()
+            }
+          });
+          
+          setEventDialog({
+            open: true,
+            event: null,
+            title: result.title,
+            description: result.description,
+            responsible: result.responsible,
+            date: result.date,
+            startTime: result.startTime,
+            category: result.category,
+            scope: result.scope
+          } as any);
+        } catch (error) {
+          setEventDialog({
+            open: true,
+            event: null,
+            initialDescription: transcript
+          } as any);
+        } finally {
+          setIsProcessing(false);
+        }
+      }
     }
   };
   
