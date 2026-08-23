@@ -48,6 +48,7 @@ export interface EventDialogState {
   event?: AgendaEvent | null;
   start?: Date;
   scope?: Scope;
+  initialDescription?: string;
 }
 
 const NONE = "__none__";
@@ -121,6 +122,9 @@ export function EventDialog({
       f.endTime = format(new Date(base.getTime() + 3600000), "HH:mm");
       f.scope = state.scope ?? "empresa";
       f.category = state.scope === "pessoal" ? "pessoal" : "empresa";
+      if (state.initialDescription) {
+        f.description = state.initialDescription;
+      }
       setForm(f);
     }
   }, [state.open, state.event, state.start, state.scope]);

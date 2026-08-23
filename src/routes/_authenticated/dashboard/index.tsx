@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEvents, useProfile } from "@/lib/agenda/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Calendar, Clock } from "lucide-react";
+import { Plus, Calendar, Clock, Mic, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { useState } from "react";
 import { EventDialog, type EventDialogState } from "@/components/app/EventDialog";
 
@@ -17,6 +18,43 @@ function Dashboard() {
   const { data: profile } = useProfile();
   
   const [eventDialog, setEventDialog] = useState<EventDialogState>({ open: false });
+  const [isListening, setIsListening] = useState(false);
+
+  const startListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("Reconhecimento de voz não suportado neste navegador.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "pt-BR";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
+    
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setEventDialog({
+        open: true,
+        event: null,
+        // We'll pass the transcript to the dialog via a custom field or by initializing the form
+        // For now, let's just open the dialog and we might need to update EventDialog to accept initial description
+      });
+      // To properly handle this, I should ideally update EventDialog to accept an initial description
+      // But a quick way is to use a custom property in EventDialogState
+      setEventDialog({
+        open: true,
+        event: null,
+        initialDescription: transcript
+      } as any);
+    };
+
+    recognition.start();
+  };
   
 
   const todayStr = new Date().toISOString().split("T")[0] || "";
@@ -35,6 +73,19 @@ function Dashboard() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={startListening}
+            className={`rounded-xl ${isListening ? 'animate-pulse border-red-200 bg-red-50 text-red-600' : ''}`}
+            disabled={isListening}
+          >
+            {isListening ? (
+              <Loader2 className="mr-2 size-4 animate-spin" />
+            ) : (
+              <Mic className="mr-2 size-4" />
+            )}
+            {isListening ? "Ouvindo..." : "Voz"}
+          </Button>
           <Button onClick={() => setEventDialog({ open: true })} className="rounded-xl">
             <Plus className="mr-2 size-4" /> Novo compromisso
           </Button>
