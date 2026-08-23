@@ -84,7 +84,7 @@ export function EventDialog({
     
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      set("description", (prev) => prev ? `${prev}\n${transcript}` : transcript);
+      setForm(prev => ({ ...prev, description: prev.description ? `${prev.description}\n${transcript}` : transcript }));
     };
 
     recognition.start();
