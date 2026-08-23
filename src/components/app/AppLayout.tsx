@@ -1,14 +1,12 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  Bell,
-  Briefcase,
+  
+  
   CalendarDays,
-  CheckSquare,
-  Contact,
-  Heart,
+  
   LayoutDashboard,
-  ListChecks,
+  
   LogOut,
   Menu,
   Search,
@@ -20,7 +18,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useNotifications, useProfile, useRoles } from "@/lib/agenda/hooks";
+import { useProfile, useRoles } from "@/lib/agenda/hooks";
 import { GlobalSearch } from "./GlobalSearch";
 
 const NAV = [
@@ -38,8 +36,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const { data: profile } = useProfile();
   const { data: roles } = useRoles();
-  const { data: notifications } = useNotifications();
-  const unread = (notifications ?? []).filter((n) => !n.read).length;
 
   useEffect(() => setOpen(false), [pathname]);
 
@@ -84,12 +80,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
               )}
             >
               <item.icon className="size-4.5 shrink-0" />
-              <span className="truncate">{item.label}</span>
-              {item.to === "/notificacoes" && unread > 0 && (
-                <span className="ml-auto rounded-full bg-destructive px-2 py-0.5 text-[11px] font-semibold text-destructive-foreground">
-                  {unread}
-                </span>
-              )}
             </Link>
           );
         })}
@@ -138,18 +128,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <Search className="size-4" />
             <span>Pesquisar compromissos…</span>
           </button>
-          <Link
-            to="/notificacoes"
-            className="relative grid size-9 shrink-0 place-items-center rounded-xl border border-border bg-card"
-            aria-label="Notificações"
-          >
-            <Bell className="size-4" />
-            {unread > 0 && (
-              <span className="absolute -right-1 -top-1 grid size-4.5 place-items-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
-                {unread}
-              </span>
-            )}
-          </Link>
         </header>
 
         <main className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6">{children}</main>
