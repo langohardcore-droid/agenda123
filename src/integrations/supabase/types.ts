@@ -194,6 +194,8 @@ export type Database = {
           default_reminder: number
           full_name: string
           id: string
+          login_pass: string | null
+          login_user: string | null
           notify_in_app: boolean
           theme: string
           timezone: string
@@ -212,6 +214,8 @@ export type Database = {
           default_reminder?: number
           full_name?: string
           id?: string
+          login_pass?: string | null
+          login_user?: string | null
           notify_in_app?: boolean
           theme?: string
           timezone?: string
@@ -230,6 +234,8 @@ export type Database = {
           default_reminder?: number
           full_name?: string
           id?: string
+          login_pass?: string | null
+          login_user?: string | null
           notify_in_app?: boolean
           theme?: string
           timezone?: string
