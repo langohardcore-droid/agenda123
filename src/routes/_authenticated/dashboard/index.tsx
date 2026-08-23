@@ -2,12 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEvents, useProfile } from "@/lib/agenda/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Calendar, Clock, Mic, Loader2, Sparkles } from "lucide-react";
+import { Plus, Calendar, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { EventDialog, type EventDialogState } from "@/components/app/EventDialog";
-import { processSpeech } from "@/lib/agenda/speech-processor.functions";
-import { useServerFn } from "@tanstack/react-start";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({
@@ -20,96 +18,7 @@ function Dashboard() {
   const { data: profile } = useProfile();
   
   const [eventDialog, setEventDialog] = useState<EventDialogState>({ open: false });
-  const [isListening, setIsListening] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [recognition, setRecognition] = useState<any>(null);
-  const runProcessSpeech = useServerFn(processSpeech);
 
-  const startListening = () => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      toast.error("Reconhecimento de voz não suportado neste navegador.");
-      return;
-    }
-
-    const reco = new SpeechRecognition();
-    reco.lang = "pt-BR";
-    reco.interimResults = false;
-    reco.maxAlternatives = 1;
-    reco.continuous = true;
-    reco.interimResults = true;
-
-    let finalTranscript = "";
-
-    reco.onstart = () => {
-      setIsListening(true);
-      finalTranscript = "";
-    };
-    reco.onend = () => setIsListening(false);
-    reco.onerror = (event: any) => {
-      console.error("Speech recognition error", event.error);
-      setIsListening(false);
-    };
-    
-    reco.onresult = async (event: any) => {
-      let interimTranscript = "";
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          interimTranscript += event.results[i][0].transcript;
-        }
-      }
-      
-      const transcript = finalTranscript || interimTranscript;
-      if (!transcript) return;
-      
-      (reco as any).lastTranscript = transcript;
-    };
-
-    reco.start();
-    setRecognition(reco);
-  };
-
-  const stopListening = async () => {
-    if (recognition) {
-      const transcript = recognition.lastTranscript;
-      recognition.stop();
-      setRecognition(null);
-      
-      if (transcript) {
-        setIsProcessing(true);
-        try {
-          const result = await runProcessSpeech({ 
-            data: {
-              text: transcript,
-              contextDate: new Date().toISOString()
-            }
-          });
-          
-          setEventDialog({
-            open: true,
-            event: null,
-            title: result.title,
-            description: result.description,
-            responsible: result.responsible,
-            date: result.date,
-            startTime: result.startTime,
-            category: result.category,
-            scope: result.scope
-          } as any);
-        } catch (error) {
-          setEventDialog({
-            open: true,
-            event: null,
-            initialDescription: transcript
-          } as any);
-        } finally {
-          setIsProcessing(false);
-        }
-      }
-    }
-  };
   
 
   const todayStr = new Date().toISOString().split("T")[0] || "";
@@ -128,25 +37,6 @@ function Dashboard() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            onMouseDown={startListening}
-            onMouseUp={stopListening}
-            onMouseLeave={stopListening}
-            onTouchStart={(e) => { e.preventDefault(); startListening(); }}
-            onTouchEnd={stopListening}
-            className={`rounded-xl transition-all ${isListening ? 'scale-110 border-red-500 bg-red-500 text-white' : ''} ${isProcessing ? 'animate-pulse border-blue-200 bg-blue-50 text-blue-600' : ''}`}
-            disabled={isProcessing}
-          >
-            {isProcessing ? (
-              <Sparkles className="mr-2 size-4 animate-pulse text-blue-500" />
-            ) : isListening ? (
-              <Loader2 className="mr-2 size-4 animate-spin" />
-            ) : (
-              <Mic className="mr-2 size-4" />
-            )}
-            {isProcessing ? "Processando..." : isListening ? "Ouvindo..." : "Voz"}
-          </Button>
           <Button onClick={() => setEventDialog({ open: true })} className="rounded-xl">
             <Plus className="mr-2 size-4" /> Novo compromisso
           </Button>
