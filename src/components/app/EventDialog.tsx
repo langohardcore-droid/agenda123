@@ -48,6 +48,7 @@ export interface EventDialogState {
   event?: AgendaEvent | null;
   start?: Date;
   scope?: Scope;
+  initialDescription?: string;
 }
 
 const NONE = "__none__";
