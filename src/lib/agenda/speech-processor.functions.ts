@@ -86,7 +86,7 @@ Retorne APENAS o JSON no formato:
       if (!content) throw new Error("Falha ao processar áudio");
 
       const cleaned = content.replace(/```json|```/g, "").trim();
-      return JSON.parse(cleaned) as Record<string, string>;
+      return JSON.parse(cleaned) as SpeechResult;
     } catch (error) {
       console.error("Erro no processSpeech:", error);
       throw new Error("Não foi possível entender o comando de voz. Tente novamente.");
