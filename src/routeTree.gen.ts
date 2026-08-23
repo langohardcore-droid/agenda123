@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAgendaIndexRouteImport } from './routes/_authenticated/agenda/index'
 import { Route as AuthenticatedClientesIndexRouteImport } from './routes/_authenticated/clientes/index'
 import { Route as AuthenticatedCompromissosIndexRouteImport } from './routes/_authenticated/compromissos/index'
+import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated/configuracoes/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -49,6 +50,12 @@ const AuthenticatedCompromissosIndexRoute =
     path: '/compromissos/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedConfiguracoesIndexRoute =
+  AuthenticatedConfiguracoesIndexRouteImport.update({
+    id: '/configuracoes/',
+    path: '/configuracoes/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -62,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/agenda/': typeof AuthenticatedAgendaIndexRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
   '/compromissos/': typeof AuthenticatedCompromissosIndexRoute
+  '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -70,6 +78,7 @@ export interface FileRoutesByTo {
   '/agenda': typeof AuthenticatedAgendaIndexRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
   '/compromissos': typeof AuthenticatedCompromissosIndexRoute
+  '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -80,14 +89,28 @@ export interface FileRoutesById {
   '/_authenticated/agenda/': typeof AuthenticatedAgendaIndexRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
   '/_authenticated/compromissos/': typeof AuthenticatedCompromissosIndexRoute
+  '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/agenda/' | '/clientes/' | '/compromissos/' | '/dashboard/'
+    | '/'
+    | '/auth'
+    | '/agenda/'
+    | '/clientes/'
+    | '/compromissos/'
+    | '/configuracoes/'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/agenda' | '/clientes' | '/compromissos' | '/dashboard'
+  to:
+    | '/'
+    | '/auth'
+    | '/agenda'
+    | '/clientes'
+    | '/compromissos'
+    | '/configuracoes'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
@@ -96,6 +119,7 @@ export interface FileRouteTypes {
     | '/_authenticated/agenda/'
     | '/_authenticated/clientes/'
     | '/_authenticated/compromissos/'
+    | '/_authenticated/configuracoes/'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -149,6 +173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompromissosIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/configuracoes/': {
+      id: '/_authenticated/configuracoes/'
+      path: '/configuracoes'
+      fullPath: '/configuracoes/'
+      preLoaderRoute: typeof AuthenticatedConfiguracoesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/dashboard'
@@ -163,6 +194,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaIndexRoute: typeof AuthenticatedAgendaIndexRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
   AuthenticatedCompromissosIndexRoute: typeof AuthenticatedCompromissosIndexRoute
+  AuthenticatedConfiguracoesIndexRoute: typeof AuthenticatedConfiguracoesIndexRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
@@ -170,6 +202,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgendaIndexRoute: AuthenticatedAgendaIndexRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
   AuthenticatedCompromissosIndexRoute: AuthenticatedCompromissosIndexRoute,
+  AuthenticatedConfiguracoesIndexRoute: AuthenticatedConfiguracoesIndexRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
 }
 
