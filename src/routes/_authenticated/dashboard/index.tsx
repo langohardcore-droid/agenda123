@@ -21,7 +21,9 @@ function Dashboard() {
 
   const todayStr = new Date().toISOString().split("T")[0] || "";
   const todayEvents = (events || []).filter((e) => e.start_at?.startsWith(todayStr));
-  const upcomingEvents = (events || []).filter((e) => (e.start_at || "") > todayStr).slice(0, 5);
+  const upcomingEvents = (events || []).filter((e) => (e.start_at || "") > todayStr);
+  const jessicaEvents = upcomingEvents.filter(e => e.responsible === "Jessica").slice(0, 5);
+  const andersonEvents = upcomingEvents.filter(e => e.responsible === "Anderson").slice(0, 5);
 
   return (
     <div className="space-y-8">
@@ -62,14 +64,14 @@ function Dashboard() {
         </Card>
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid gap-6 md:grid-cols-2">
         <Card className="surface border-none">
           <CardHeader>
-            <CardTitle>Próximos Compromissos</CardTitle>
+            <CardTitle>Agenda da Jessica</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {upcomingEvents.length > 0 ? (
-              upcomingEvents.map((event) => (
+            {jessicaEvents.length > 0 ? (
+              jessicaEvents.map((event) => (
                 <div key={event.id} className="flex items-center gap-3 rounded-lg border p-3">
                   <div
                     className="size-2 rounded-full"
@@ -84,11 +86,36 @@ function Dashboard() {
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">Nenhum compromisso próximo.</p>
+              <p className="text-sm text-muted-foreground">Nenhum compromisso próximo para Jessica.</p>
             )}
           </CardContent>
         </Card>
 
+        <Card className="surface border-none">
+          <CardHeader>
+            <CardTitle>Agenda do Anderson</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {andersonEvents.length > 0 ? (
+              andersonEvents.map((event) => (
+                <div key={event.id} className="flex items-center gap-3 rounded-lg border p-3">
+                  <div
+                    className="size-2 rounded-full"
+                    style={{ backgroundColor: `var(--cat-${event.category})` }}
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{event.title}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(event.start_at).toLocaleString("pt-BR")}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">Nenhum compromisso próximo para Anderson.</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <EventDialog state={eventDialog} onOpenChange={(open) => setEventDialog(s => ({ ...s, open }))} />
