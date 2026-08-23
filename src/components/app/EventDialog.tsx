@@ -79,8 +79,17 @@ export function EventDialog({
         scope: e.scope,
         category: "empresa",
         date: format(new Date(e.start_at), "yyyy-MM-dd"),
+        startTime: "09:00",
+        endTime: "10:00",
         location: e.location ?? "",
+        client_id: NONE,
         responsible: e.responsible ?? "",
+        priority: "media",
+        status: "agendado",
+        notes: "",
+        recurrence: "nao",
+        recurrence_interval: "1",
+        recurrence_end: "",
         reminder: e.reminder_minutes ? String(e.reminder_minutes) : NONE,
       });
     } else {
