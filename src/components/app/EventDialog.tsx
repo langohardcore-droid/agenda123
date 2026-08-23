@@ -188,12 +188,36 @@ export function EventDialog({
           </div>
 
           <div className="sm:col-span-2">
-            <Label htmlFor="desc">Descrição</Label>
+            <div className="mb-2 flex items-center justify-between">
+              <Label htmlFor="desc">Descrição</Label>
+              <Button 
+                type="button"
+                variant="ghost" 
+                size="sm" 
+                className={`h-8 gap-2 rounded-full px-3 ${isListening ? 'animate-pulse bg-red-50 text-red-600 hover:bg-red-100' : ''}`}
+                onClick={startListening}
+                disabled={isListening}
+              >
+                {isListening ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Ouvindo...
+                  </>
+                ) : (
+                  <>
+                    <Mic className="size-4" />
+                    Comando de Voz
+                  </>
+                )}
+              </Button>
+            </div>
             <Textarea
               id="desc"
               value={form.description}
               maxLength={2000}
               onChange={(e) => set("description", e.target.value)}
+              placeholder="Digite ou use o comando de voz para descrever o compromisso..."
+              className="min-h-[120px]"
             />
           </div>
 
