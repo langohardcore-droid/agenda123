@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAgendaIndexRouteImport } from './routes/_authenticated/agenda/index'
+import { Route as AuthenticatedClientesIndexRouteImport } from './routes/_authenticated/clientes/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,12 @@ const AuthenticatedAgendaIndexRoute =
     path: '/agenda/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedClientesIndexRoute =
+  AuthenticatedClientesIndexRouteImport.update({
+    id: '/clientes/',
+    path: '/clientes/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -46,12 +53,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/agenda/': typeof AuthenticatedAgendaIndexRoute
+  '/clientes/': typeof AuthenticatedClientesIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/agenda': typeof AuthenticatedAgendaIndexRoute
+  '/clientes': typeof AuthenticatedClientesIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -60,19 +69,21 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/agenda/': typeof AuthenticatedAgendaIndexRoute
+  '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/agenda/' | '/dashboard/'
+  fullPaths: '/' | '/auth' | '/agenda/' | '/clientes/' | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/agenda' | '/dashboard'
+  to: '/' | '/auth' | '/agenda' | '/clientes' | '/dashboard'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/agenda/'
+    | '/_authenticated/clientes/'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -112,6 +123,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAgendaIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/clientes/': {
+      id: '/_authenticated/clientes/'
+      path: '/clientes'
+      fullPath: '/clientes/'
+      preLoaderRoute: typeof AuthenticatedClientesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/dashboard'
@@ -124,11 +142,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaIndexRoute: typeof AuthenticatedAgendaIndexRoute
+  AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgendaIndexRoute: AuthenticatedAgendaIndexRoute,
+  AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
 }
 
