@@ -260,12 +260,16 @@ export function EventDialog({
           </div>
 
           <div>
-            <Label htmlFor="resp">Responsável</Label>
-            <Input
-              id="resp"
-              value={form.responsible}
-              onChange={(e) => set("responsible", e.target.value)}
-            />
+            <Label>Responsável</Label>
+            <Select value={form.responsible} onValueChange={(v) => set("responsible", v)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o responsável" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Jessica">Jessica</SelectItem>
+                <SelectItem value="Anderson">Anderson</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
@@ -426,7 +430,7 @@ function emptyForm() {
     endTime: "10:00",
     location: "",
     client_id: NONE,
-    responsible: "",
+    responsible: "Jessica",
     priority: "media" as AgendaEvent["priority"],
     status: "agendado" as AgendaEvent["status"],
     notes: "",
