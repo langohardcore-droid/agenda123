@@ -7,7 +7,7 @@ import { useState } from "react";
 import { EventDialog } from "@/components/app/EventDialog";
 import { TaskDialog } from "@/components/app/TaskDialog";
 
-export const Route = createFileRoute("/_authenticated/dashboard")({
+export const Route = createFileRoute("/_authenticated/dashboard/")({
   component: Dashboard,
 });
 
