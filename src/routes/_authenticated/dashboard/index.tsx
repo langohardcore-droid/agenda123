@@ -22,6 +22,7 @@ function Dashboard() {
   const [eventDialog, setEventDialog] = useState<EventDialogState>({ open: false });
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [recognition, setRecognition] = useState<any>(null);
   const runProcessSpeech = useServerFn(processSpeech);
 
   const startListening = () => {
@@ -31,17 +32,24 @@ function Dashboard() {
       return;
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = "pt-BR";
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    const reco = new SpeechRecognition();
+    reco.lang = "pt-BR";
+    reco.interimResults = false;
+    reco.maxAlternatives = 1;
+    reco.continuous = true;
 
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = () => setIsListening(false);
+    reco.onstart = () => setIsListening(true);
+    reco.onend = () => setIsListening(false);
+    reco.onerror = (event: any) => {
+      console.error("Speech recognition error", event.error);
+      setIsListening(false);
+    };
     
-    recognition.onresult = async (event: any) => {
-      const transcript = event.results[0][0].transcript;
+    reco.onresult = async (event: any) => {
+      const transcript = Array.from(event.results)
+        .map((result: any) => result[0].transcript)
+        .join(" ");
+      
       setIsProcessing(true);
       try {
         await runProcessSpeech({ 
@@ -67,7 +75,15 @@ function Dashboard() {
       }
     };
 
-    recognition.start();
+    reco.start();
+    setRecognition(reco);
+  };
+
+  const stopListening = () => {
+    if (recognition) {
+      recognition.stop();
+      setRecognition(null);
+    }
   };
   
 
@@ -89,9 +105,13 @@ function Dashboard() {
         <div className="flex gap-2">
           <Button 
             variant="outline" 
-            onClick={startListening}
-            className={`rounded-xl ${isListening ? 'animate-pulse border-red-200 bg-red-50 text-red-600' : ''} ${isProcessing ? 'animate-pulse border-blue-200 bg-blue-50 text-blue-600' : ''}`}
-            disabled={isListening || isProcessing}
+            onMouseDown={startListening}
+            onMouseUp={stopListening}
+            onMouseLeave={stopListening}
+            onTouchStart={(e) => { e.preventDefault(); startListening(); }}
+            onTouchEnd={stopListening}
+            className={`rounded-xl transition-all ${isListening ? 'scale-110 border-red-500 bg-red-500 text-white' : ''} ${isProcessing ? 'animate-pulse border-blue-200 bg-blue-50 text-blue-600' : ''}`}
+            disabled={isProcessing}
           >
             {isProcessing ? (
               <Sparkles className="mr-2 size-4 animate-pulse text-blue-500" />
