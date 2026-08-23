@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { Trash2, Mic, MicOff, Loader2 } from "lucide-react";
+import { Trash2, Mic, MicOff, Loader2, Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +32,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useClients, useDeleteEvent, useSaveEvent } from "@/lib/agenda/hooks";
+import { processSpeech } from "@/lib/agenda/speech-processor.functions";
+import { useServerFn } from "@tanstack/react-start";
 import {
   CATEGORIES,
   EVENT_STATUS,
@@ -66,6 +68,8 @@ export function EventDialog({
 
   const [form, setForm] = useState(() => emptyForm());
   const [isListening, setIsListening] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const runProcessSpeech = useServerFn(processSpeech);
 
   const startListening = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -83,9 +87,40 @@ export function EventDialog({
     recognition.onend = () => setIsListening(false);
     recognition.onerror = () => setIsListening(false);
     
-    recognition.onresult = (event: any) => {
+    recognition.onresult = async (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setForm(prev => ({ ...prev, description: prev.description ? `${prev.description}\n${transcript}` : transcript }));
+      setIsProcessing(true);
+      try {
+        const result = await runProcessSpeech({ 
+          text: transcript,
+          contextDate: new Date().toISOString()
+        });
+        
+        setForm(prev => ({
+          ...prev,
+          title: result.title || prev.title,
+          description: result.description || prev.description,
+          scope: result.scope || prev.scope,
+          category: result.category || prev.category,
+          date: result.date || prev.date,
+          startTime: result.startTime || prev.startTime,
+          endTime: result.endTime || prev.endTime,
+          location: result.location || prev.location,
+          responsible: result.responsible || prev.responsible,
+          priority: result.priority || prev.priority,
+        }));
+        
+        toast.success("Comando processado com sucesso!");
+      } catch (error) {
+        console.error("Speech processing error:", error);
+        toast.error("Não entendi bem o comando. Preenchendo a descrição...");
+        setForm(prev => ({ 
+          ...prev, 
+          description: prev.description ? `${prev.description}\n${transcript}` : transcript 
+        }));
+      } finally {
+        setIsProcessing(false);
+      }
     };
 
     recognition.start();
@@ -200,9 +235,14 @@ export function EventDialog({
                 size="sm" 
                 className={`h-8 gap-2 rounded-full px-3 ${isListening ? 'animate-pulse bg-red-50 text-red-600 hover:bg-red-100' : ''}`}
                 onClick={startListening}
-                disabled={isListening}
+                disabled={isListening || isProcessing}
               >
-                {isListening ? (
+                {isProcessing ? (
+                  <>
+                    <Sparkles className="size-4 animate-pulse text-blue-500" />
+                    Processando...
+                  </>
+                ) : isListening ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
                     Ouvindo...

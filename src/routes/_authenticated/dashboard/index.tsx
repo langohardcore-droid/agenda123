@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEvents, useProfile } from "@/lib/agenda/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Calendar, Clock, Mic, Loader2 } from "lucide-react";
+import { Plus, Calendar, Clock, Mic, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { EventDialog, type EventDialogState } from "@/components/app/EventDialog";
