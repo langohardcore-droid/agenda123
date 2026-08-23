@@ -9,6 +9,7 @@ const speechInputSchema = z.object({
 export const processSpeech = createServerFn({ method: "POST" })
   .inputValidator((data) => speechInputSchema.parse(data))
   .handler(async ({ data }) => {
+    // @ts-ignore - ai-gateway might not have local types but is available in the runtime
     const { aiGateway } = await import("@lovable.dev/ai-gateway");
     
     const now = data.contextDate || new Date().toISOString();

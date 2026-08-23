@@ -91,9 +91,11 @@ export function EventDialog({
       const transcript = event.results[0][0].transcript;
       setIsProcessing(true);
       try {
-        const result = await runProcessSpeech({ 
-          text: transcript,
-          contextDate: new Date().toISOString()
+        const result = await runProcessSpeech({
+          data: {
+            text: transcript,
+            contextDate: new Date().toISOString()
+          }
         });
         
         setForm(prev => ({
