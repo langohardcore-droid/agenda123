@@ -84,8 +84,14 @@ export function EventDialog({
     reco.interimResults = false;
     reco.maxAlternatives = 1;
     reco.continuous = true;
+    reco.interimResults = true;
 
-    reco.onstart = () => setIsListening(true);
+    let finalTranscript = "";
+
+    reco.onstart = () => {
+      setIsListening(true);
+      finalTranscript = "";
+    };
     reco.onend = () => setIsListening(false);
     reco.onerror = (event: any) => {
       console.error("Speech recognition error", event.error);
@@ -93,54 +99,67 @@ export function EventDialog({
     };
     
     reco.onresult = async (event: any) => {
-      const transcript = Array.from(event.results)
-        .map((result: any) => result[0].transcript)
-        .join(" ");
-      
-      setIsProcessing(true);
-      try {
-        const result = await runProcessSpeech({
-          data: {
-            text: transcript,
-            contextDate: new Date().toISOString()
-          }
-        });
-        
-        setForm(prev => ({
-          ...prev,
-          title: result.title || prev.title,
-          description: result.description || prev.description,
-          scope: result.scope || prev.scope,
-          category: result.category || prev.category,
-          date: result.date || prev.date,
-          startTime: result.startTime || prev.startTime,
-          endTime: result.endTime || prev.endTime,
-          location: result.location || prev.location,
-          responsible: result.responsible || prev.responsible,
-          priority: result.priority || prev.priority,
-        }));
-        
-        toast.success("Comando processado com sucesso!");
-      } catch (error) {
-        console.error("Speech processing error:", error);
-        toast.error("Não entendi bem o comando. Preenchendo a descrição...");
-        setForm(prev => ({ 
-          ...prev, 
-          description: prev.description ? `${prev.description}\n${transcript}` : transcript 
-        }));
-      } finally {
-        setIsProcessing(false);
+      let interimTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
       }
+      
+      const transcript = finalTranscript || interimTranscript;
+      if (!transcript) return;
+      
+      (reco as any).lastTranscript = transcript;
     };
 
     reco.start();
     setRecognition(reco);
   };
 
-  const stopListening = () => {
+  const stopListening = async () => {
     if (recognition) {
+      const transcript = recognition.lastTranscript;
       recognition.stop();
       setRecognition(null);
+
+      if (transcript) {
+        setIsProcessing(true);
+        try {
+          const result = await runProcessSpeech({
+            data: {
+              text: transcript,
+              contextDate: new Date().toISOString()
+            }
+          });
+          
+          setForm(prev => ({
+            ...prev,
+            title: result.title || prev.title,
+            description: result.description || prev.description,
+            scope: result.scope || prev.scope,
+            category: result.category || prev.category,
+            date: result.date || prev.date,
+            startTime: result.startTime || prev.startTime,
+            endTime: result.endTime || prev.endTime,
+            location: result.location || prev.location,
+            responsible: result.responsible || prev.responsible,
+            priority: result.priority || prev.priority,
+          }));
+          
+          toast.success("Comando processado com sucesso!");
+        } catch (error) {
+          console.error("Speech processing error:", error);
+          toast.error("Não entendi bem o comando. Preenchendo a descrição...");
+          setForm(prev => ({ 
+            ...prev, 
+            description: prev.description ? `${prev.description}\n${transcript}` : transcript 
+          }));
+        } finally {
+          setIsProcessing(false);
+        }
+      }
     }
   };
 
