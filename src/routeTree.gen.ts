@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAgendaIndexRouteImport } from './routes/_authenticated/agenda/index'
 import { Route as AuthenticatedClientesIndexRouteImport } from './routes/_authenticated/clientes/index'
+import { Route as AuthenticatedCompromissosIndexRouteImport } from './routes/_authenticated/compromissos/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -42,6 +43,12 @@ const AuthenticatedClientesIndexRoute =
     path: '/clientes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCompromissosIndexRoute =
+  AuthenticatedCompromissosIndexRouteImport.update({
+    id: '/compromissos/',
+    path: '/compromissos/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -54,6 +61,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/agenda/': typeof AuthenticatedAgendaIndexRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
+  '/compromissos/': typeof AuthenticatedCompromissosIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +69,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/agenda': typeof AuthenticatedAgendaIndexRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
+  '/compromissos': typeof AuthenticatedCompromissosIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -70,13 +79,15 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/agenda/': typeof AuthenticatedAgendaIndexRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
+  '/_authenticated/compromissos/': typeof AuthenticatedCompromissosIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/agenda/' | '/clientes/' | '/dashboard/'
+  fullPaths:
+    '/' | '/auth' | '/agenda/' | '/clientes/' | '/compromissos/' | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/agenda' | '/clientes' | '/dashboard'
+  to: '/' | '/auth' | '/agenda' | '/clientes' | '/compromissos' | '/dashboard'
   id:
     | '__root__'
     | '/'
@@ -84,6 +95,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/agenda/'
     | '/_authenticated/clientes/'
+    | '/_authenticated/compromissos/'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -130,6 +142,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/compromissos/': {
+      id: '/_authenticated/compromissos/'
+      path: '/compromissos'
+      fullPath: '/compromissos/'
+      preLoaderRoute: typeof AuthenticatedCompromissosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/dashboard'
@@ -143,12 +162,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaIndexRoute: typeof AuthenticatedAgendaIndexRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
+  AuthenticatedCompromissosIndexRoute: typeof AuthenticatedCompromissosIndexRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgendaIndexRoute: AuthenticatedAgendaIndexRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
+  AuthenticatedCompromissosIndexRoute: AuthenticatedCompromissosIndexRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
 }
 
