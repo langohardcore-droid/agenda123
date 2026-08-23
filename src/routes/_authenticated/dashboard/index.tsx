@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Calendar, CheckSquare, Clock, AlertTriangle } from "lucide-react";
 import { useState } from "react";
-import { EventDialog } from "@/components/app/EventDialog";
-import { TaskDialog } from "@/components/app/TaskDialog";
+import { EventDialog, type EventDialogState } from "@/components/app/EventDialog";
+import { TaskDialog, type TaskDialogState } from "@/components/app/TaskDialog";
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({
   component: Dashboard,
@@ -15,14 +15,15 @@ function Dashboard() {
   const { data: events = [] } = useEvents();
   const { data: tasks = [] } = useTasks();
   const { data: profile } = useProfile();
-  const [eventOpen, setEventOpen] = useState(false);
-  const [taskOpen, setTaskOpen] = useState(false);
+  
+  const [eventDialog, setEventDialog] = useState<EventDialogState>({ open: false });
+  const [taskDialog, setTaskDialog] = useState<TaskDialogState>({ open: false });
 
-  const today = new Date().toISOString().split("T")[0];
-  const todayEvents = events.filter((e) => e.start_at.startsWith(today));
-  const upcomingEvents = events.filter((e) => e.start_at > today).slice(0, 5);
-  const pendingTasks = tasks.filter((t) => t.status !== "concluida");
-  const delayedTasks = tasks.filter((t) => t.status === "atrasada");
+  const todayStr = new Date().toISOString().split("T")[0];
+  const todayEvents = (events || []).filter((e) => e.start_at?.startsWith(todayStr));
+  const upcomingEvents = (events || []).filter((e) => e.start_at > todayStr).slice(0, 5);
+  const pendingTasks = (tasks || []).filter((t) => t.status !== "concluida");
+  const delayedTasks = (tasks || []).filter((t) => t.status === "atrasada");
 
   return (
     <div className="space-y-8">
@@ -34,10 +35,10 @@ function Dashboard() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => setEventOpen(true)} className="rounded-xl">
+          <Button onClick={() => setEventDialog({ open: true })} className="rounded-xl">
             <Plus className="mr-2 size-4" /> Novo compromisso
           </Button>
-          <Button onClick={() => setTaskOpen(true)} variant="outline" className="rounded-xl">
+          <Button onClick={() => setTaskDialog({ open: true })} variant="outline" className="rounded-xl">
             <Plus className="mr-2 size-4" /> Nova tarefa
           </Button>
         </div>
@@ -138,8 +139,8 @@ function Dashboard() {
         </Card>
       </div>
 
-      <EventDialog open={eventOpen} onOpenChange={setEventOpen} />
-      <TaskDialog open={taskOpen} onOpenChange={setTaskOpen} />
+      <EventDialog state={eventDialog} onOpenChange={(open) => setEventDialog(s => ({ ...s, open }))} />
+      <TaskDialog state={taskDialog} onOpenChange={(open) => setTaskDialog(s => ({ ...s, open }))} />
     </div>
   );
 }
