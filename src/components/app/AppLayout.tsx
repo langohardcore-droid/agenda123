@@ -24,15 +24,8 @@ import { useNotifications, useProfile, useRoles } from "@/lib/agenda/hooks";
 import { GlobalSearch } from "./GlobalSearch";
 
 const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/agenda", label: "Agenda", icon: CalendarDays },
-  { to: "/compromissos", label: "Compromissos", icon: ListChecks },
-  { to: "/tarefas", label: "Tarefas", icon: CheckSquare },
-  { to: "/clientes", label: "Clientes", icon: Users },
-  { to: "/contatos", label: "Contatos", icon: Contact },
-  { to: "/empresarial", label: "Agenda Empresarial", icon: Briefcase },
-  { to: "/pessoal", label: "Agenda Pessoal", icon: Heart },
-  { to: "/notificacoes", label: "Notificações", icon: Bell },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/configuracoes", label: "Configurações", icon: Settings },
   { to: "/configuracoes/usuarios", label: "Gestão de Usuários", icon: Users, adminOnly: true },
 ] as const;
@@ -143,7 +136,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent"
           >
             <Search className="size-4" />
-            <span>Pesquisar compromissos, tarefas, clientes…</span>
+            <span>Pesquisar compromissos…</span>
           </button>
           <Link
             to="/notificacoes"
