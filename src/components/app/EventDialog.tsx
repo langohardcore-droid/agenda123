@@ -69,6 +69,7 @@ export function EventDialog({
   const [form, setForm] = useState(() => emptyForm());
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [recognition, setRecognition] = useState<any>(null);
   const runProcessSpeech = useServerFn(processSpeech);
 
   const startListening = () => {
@@ -78,17 +79,24 @@ export function EventDialog({
       return;
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = "pt-BR";
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    const reco = new SpeechRecognition();
+    reco.lang = "pt-BR";
+    reco.interimResults = false;
+    reco.maxAlternatives = 1;
+    reco.continuous = true;
 
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = () => setIsListening(false);
+    reco.onstart = () => setIsListening(true);
+    reco.onend = () => setIsListening(false);
+    reco.onerror = (event: any) => {
+      console.error("Speech recognition error", event.error);
+      setIsListening(false);
+    };
     
-    recognition.onresult = async (event: any) => {
-      const transcript = event.results[0][0].transcript;
+    reco.onresult = async (event: any) => {
+      const transcript = Array.from(event.results)
+        .map((result: any) => result[0].transcript)
+        .join(" ");
+      
       setIsProcessing(true);
       try {
         const result = await runProcessSpeech({
@@ -125,7 +133,15 @@ export function EventDialog({
       }
     };
 
-    recognition.start();
+    reco.start();
+    setRecognition(reco);
+  };
+
+  const stopListening = () => {
+    if (recognition) {
+      recognition.stop();
+      setRecognition(null);
+    }
   };
 
   useEffect(() => {
@@ -235,9 +251,13 @@ export function EventDialog({
                 type="button"
                 variant="ghost" 
                 size="sm" 
-                className={`h-8 gap-2 rounded-full px-3 ${isListening ? 'animate-pulse bg-red-50 text-red-600 hover:bg-red-100' : ''}`}
-                onClick={startListening}
-                disabled={isListening || isProcessing}
+                className={`h-8 gap-2 rounded-full px-3 transition-all ${isListening ? 'scale-110 bg-red-500 text-white hover:bg-red-600' : 'hover:bg-accent'}`}
+                onMouseDown={startListening}
+                onMouseUp={stopListening}
+                onMouseLeave={stopListening}
+                onTouchStart={(e) => { e.preventDefault(); startListening(); }}
+                onTouchEnd={stopListening}
+                disabled={isProcessing}
               >
                 {isProcessing ? (
                   <>
