@@ -80,6 +80,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
               )}
             >
               <item.icon className="size-4.5 shrink-0" />
+              <span className="truncate">{item.label}</span>
             </Link>
           );
         })}
