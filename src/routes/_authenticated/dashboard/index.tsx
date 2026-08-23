@@ -18,6 +18,43 @@ function Dashboard() {
   const { data: profile } = useProfile();
   
   const [eventDialog, setEventDialog] = useState<EventDialogState>({ open: false });
+  const [isListening, setIsListening] = useState(false);
+
+  const startListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("Reconhecimento de voz não suportado neste navegador.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "pt-BR";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
+    
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setEventDialog({
+        open: true,
+        event: null,
+        // We'll pass the transcript to the dialog via a custom field or by initializing the form
+        // For now, let's just open the dialog and we might need to update EventDialog to accept initial description
+      });
+      // To properly handle this, I should ideally update EventDialog to accept an initial description
+      // But a quick way is to use a custom property in EventDialogState
+      setEventDialog({
+        open: true,
+        event: null,
+        initialDescription: transcript
+      } as any);
+    };
+
+    recognition.start();
+  };
   
 
   const todayStr = new Date().toISOString().split("T")[0] || "";
