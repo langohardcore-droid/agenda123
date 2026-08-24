@@ -81,7 +81,7 @@ export function EventDialog({
         date: format(new Date(e.start_at), "yyyy-MM-dd"),
         startTime: "09:00",
         endTime: "10:00",
-        location: e.location ?? "",
+        location: "",
         client_id: NONE,
         responsible: e.responsible ?? "",
         priority: "media",
@@ -126,7 +126,7 @@ export function EventDialog({
       category: "empresa",
       start_at: start.toISOString(),
       end_at: end.toISOString(),
-      location: form.location.trim() || null,
+      location: null,
       responsible: form.responsible.trim() || null,
       priority: "media",
       status: "agendado",
@@ -214,14 +214,6 @@ export function EventDialog({
           </div>
 
 
-          <div>
-            <Label htmlFor="loc">Local</Label>
-            <Input
-              id="loc"
-              value={form.location}
-              onChange={(e) => set("location", e.target.value)}
-            />
-          </div>
 
 
 
