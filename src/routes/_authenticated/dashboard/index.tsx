@@ -1,11 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEvents, useProfile } from "@/lib/agenda/hooks";
+import { cn } from "@/lib/utils";
+import { useEvents, useProfile, useDeleteEvent, useSaveEvent } from "@/lib/agenda/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Calendar, Clock } from "lucide-react";
+import { Plus, Calendar, Clock, CheckCircle, Trash2, MoreVertical } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { EventDialog, type EventDialogState } from "@/components/app/EventDialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useLongPress } from "@/hooks/use-long-press";
+import { AgendaEvent } from "@/lib/agenda/types";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({
@@ -14,10 +23,30 @@ export const Route = createFileRoute("/_authenticated/dashboard/")({
 
 function Dashboard() {
   const { data: events = [] } = useEvents();
-  
+  const deleteEvent = useDeleteEvent();
+  const saveEvent = useSaveEvent();
   const { data: profile } = useProfile();
-  
   const [eventDialog, setEventDialog] = useState<EventDialogState>({ open: false });
+  const [menuEvent, setMenuEvent] = useState<AgendaEvent | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleLongPress = (event: AgendaEvent) => {
+    setMenuEvent(event);
+    setMenuOpen(true);
+  };
+
+  const handleComplete = async (event: AgendaEvent) => {
+    await saveEvent.mutateAsync({
+      id: event.id,
+      status: "concluido",
+    });
+    setMenuOpen(false);
+  };
+
+  const handleDelete = async (event: AgendaEvent) => {
+    await deleteEvent.mutateAsync(event.id);
+    setMenuOpen(false);
+  };
 
   
 
@@ -74,15 +103,31 @@ function Dashboard() {
           <CardContent className="space-y-4">
             {jessicaEvents.length > 0 ? (
               jessicaEvents.map((event) => (
-                <div key={event.id} className="flex items-center gap-3 rounded-lg border p-3">
+                <div 
+                  key={event.id} 
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg border p-3 cursor-pointer select-none transition-colors hover:bg-muted/50",
+                    event.status === "concluido" && "opacity-60 bg-muted/30"
+                  )}
+                  {...useLongPress(() => handleLongPress(event))}
+                  onClick={() => setEventDialog({ open: true, event })}
+                >
                   <div
-                    className="size-2 rounded-full bg-primary"
+                    className={cn(
+                      "size-2 rounded-full",
+                      event.status === "concluido" ? "bg-muted-foreground" : "bg-primary"
+                    )}
                   />
                   <div className="flex-1">
-                    <p className="text-sm font-medium">{event.title}</p>
+                    <p className={cn("text-sm font-medium", event.status === "concluido" && "line-through")}>
+                      {event.title}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(event.start_at).toLocaleString("pt-BR")}
                     </p>
+                  </div>
+                  <div className="md:hidden text-muted-foreground opacity-50">
+                    <MoreVertical className="size-4" />
                   </div>
                 </div>
               ))
@@ -99,15 +144,31 @@ function Dashboard() {
           <CardContent className="space-y-4">
             {andersonEvents.length > 0 ? (
               andersonEvents.map((event) => (
-                <div key={event.id} className="flex items-center gap-3 rounded-lg border p-3">
+                <div 
+                  key={event.id} 
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg border p-3 cursor-pointer select-none transition-colors hover:bg-muted/50",
+                    event.status === "concluido" && "opacity-60 bg-muted/30"
+                  )}
+                  {...useLongPress(() => handleLongPress(event))}
+                  onClick={() => setEventDialog({ open: true, event })}
+                >
                   <div
-                    className="size-2 rounded-full bg-primary"
+                    className={cn(
+                      "size-2 rounded-full",
+                      event.status === "concluido" ? "bg-muted-foreground" : "bg-primary"
+                    )}
                   />
                   <div className="flex-1">
-                    <p className="text-sm font-medium">{event.title}</p>
+                    <p className={cn("text-sm font-medium", event.status === "concluido" && "line-through")}>
+                      {event.title}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(event.start_at).toLocaleString("pt-BR")}
                     </p>
+                  </div>
+                  <div className="md:hidden text-muted-foreground opacity-50">
+                    <MoreVertical className="size-4" />
                   </div>
                 </div>
               ))
@@ -120,6 +181,24 @@ function Dashboard() {
 
       <EventDialog state={eventDialog} onOpenChange={(open) => setEventDialog(s => ({ ...s, open }))} />
       
+      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+        <DropdownMenuContent align="center" className="w-48">
+          <DropdownMenuItem 
+            onClick={() => menuEvent && handleComplete(menuEvent)}
+            className="text-green-600 focus:text-green-600 focus:bg-green-50"
+          >
+            <CheckCircle className="mr-2 h-4 w-4" />
+            Concluído
+          </DropdownMenuItem>
+          <DropdownMenuItem 
+            onClick={() => menuEvent && handleDelete(menuEvent)}
+            className="text-destructive focus:text-destructive focus:bg-destructive/10"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Excluir
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
