@@ -3,9 +3,7 @@ import { useNotifications, useMarkNotification } from "@/lib/agenda/hooks";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Bell, BellOff, Check, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { cn, safeFormatDate } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/notificacoes/")({
   component: NotificationsPage,
@@ -45,7 +43,7 @@ function NotificationsPage() {
                       {n.title}
                     </h3>
                     <span className="text-[10px] font-medium text-muted-foreground whitespace-nowrap uppercase">
-                      {format(new Date(n.scheduled_at), "d 'de' MMMM, HH:mm", { locale: ptBR })}
+                      {safeFormatDate(n.scheduled_at, "d 'de' MMMM, HH:mm")}
                     </span>
                   </div>
                   <p className={cn("text-sm mt-1", n.read ? "text-muted-foreground" : "text-foreground")}>

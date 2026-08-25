@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { cn } from "@/lib/utils";
+import { cn, safeFormatDate } from "@/lib/utils";
 import { useEvents, useProfile, useDeleteEvent, useSaveEvent } from "@/lib/agenda/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ interface EventItemProps {
 
 function EventItem({ event, onSelect, onLongPress }: EventItemProps) {
   const longPressProps = useLongPress(() => onLongPress(event));
+  const formattedDate = safeFormatDate(event.start_at, "dd/MM/yyyy 'às' HH:mm");
 
   return (
     <div
@@ -45,9 +46,11 @@ function EventItem({ event, onSelect, onLongPress }: EventItemProps) {
         <p className={cn("text-sm font-medium", event.status === "concluido" && "line-through")}>
           {event.title}
         </p>
-        <p className="text-xs text-muted-foreground">
-          {new Date(event.start_at).toLocaleString("pt-BR")}
-        </p>
+        {formattedDate && (
+          <p className="text-xs text-muted-foreground">
+            {formattedDate}
+          </p>
+        )}
       </div>
       <div className="md:hidden text-muted-foreground opacity-50">
         <MoreVertical className="size-4" />

@@ -1,5 +1,4 @@
 import { useNavigate } from "@tanstack/react-router";
-import { format } from "date-fns";
 import {
   CommandDialog,
   CommandEmpty,
@@ -9,6 +8,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useClients, useEvents, useTasks } from "@/lib/agenda/hooks";
+import { safeFormatDate } from "@/lib/utils";
 
 export function GlobalSearch({
   open,
@@ -18,9 +18,9 @@ export function GlobalSearch({
   onOpenChange: (v: boolean) => void;
 }) {
   const navigate = useNavigate();
-  const { data: events } = useEvents();
-  const { data: tasks } = useTasks();
-  const { data: clients } = useClients();
+  const { data: events = [] } = useEvents();
+  const { data: tasks = [] } = useTasks();
+  const { data: clients = [] } = useClients();
 
   function go(to: string) {
     onOpenChange(false);
@@ -34,10 +34,10 @@ export function GlobalSearch({
         <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
         <CommandGroup heading="Compromissos">
           {(events ?? []).slice(0, 30).map((e) => (
-            <CommandItem key={e.id} value={`${e.title} ${e.location ?? ""}`} onSelect={() => go("/compromissos")}>
+            <CommandItem key={e.id} value={`${e.title} ${e.location ?? ""}`} onSelect={() => go("/agenda")}>
               <span className="truncate">{e.title}</span>
               <span className="ml-auto text-xs text-muted-foreground">
-                {format(new Date(e.start_at), "dd/MM HH:mm")}
+                {safeFormatDate(e.start_at, "dd/MM HH:mm")}
               </span>
             </CommandItem>
           ))}

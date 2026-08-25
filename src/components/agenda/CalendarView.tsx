@@ -74,7 +74,15 @@ export function CalendarView({ events, onSelectEvent, onSelectSlot }: CalendarPr
 
       <div className="grid flex-1 grid-cols-7 border-l border-t">
         {calendarDays.map((day) => {
-          const dayEvents = events.filter((e) => isSameDay(new Date(e.start_at), day));
+          const dayEvents = (events || []).filter((e) => {
+            if (!e.start_at) return false;
+            try {
+              const d = new Date(e.start_at);
+              return !isNaN(d.getTime()) && isSameDay(d, day);
+            } catch {
+              return false;
+            }
+          });
           const isToday = isSameDay(day, new Date());
           const isCurrentMonth = isSameMonth(day, monthStart);
 

@@ -7,7 +7,7 @@ import { Plus, Search, Filter, CheckCircle2, Circle, Clock, AlertTriangle } from
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn, safeFormatDate } from "@/lib/utils";
 import { type Task } from "@/lib/agenda/types";
 
 export const Route = createFileRoute("/_authenticated/tarefas/")({
@@ -83,9 +83,9 @@ function TasksPage() {
                     {task.scope}
                   </Badge>
                 </div>
-                {task.due_at && (
+                {task.due_at && safeFormatDate(task.due_at, "dd/MM/yyyy") && (
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Prazo: {new Date(task.due_at).toLocaleDateString("pt-BR")}
+                    Prazo: {safeFormatDate(task.due_at, "dd/MM/yyyy")}
                   </p>
                 )}
               </div>

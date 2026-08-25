@@ -34,7 +34,11 @@ function AuthPage() {
     if (login === "agendapro" && password === "73829155640") {
       localStorage.setItem("agenda_pro_auth", "true");
       toast.success("Login realizado com sucesso!");
-      navigate({ to: search.redirect || "/dashboard", replace: true });
+      const target =
+        search.redirect && search.redirect.startsWith("/") && !search.redirect.startsWith("//")
+          ? search.redirect
+          : "/dashboard";
+      navigate({ to: target as "/dashboard", replace: true });
     } else {
       toast.error("Usuário ou senha incorretos");
       setLoading(false);
