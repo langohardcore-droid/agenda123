@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,7 +8,12 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { CalendarDays, Lock, User } from "lucide-react";
 
+const authSearchSchema = z.object({
+  redirect: z.string().optional(),
+});
+
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search) => authSearchSchema.parse(search),
   component: AuthPage,
 });
 
@@ -16,6 +22,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const search = Route.useSearch();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +34,7 @@ function AuthPage() {
     if (login === "agendapro" && password === "73829155640") {
       localStorage.setItem("agenda_pro_auth", "true");
       toast.success("Login realizado com sucesso!");
-      navigate({ to: "/dashboard", replace: true });
+      navigate({ to: search.redirect || "/dashboard", replace: true });
     } else {
       toast.error("Usuário ou senha incorretos");
       setLoading(false);

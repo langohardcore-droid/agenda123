@@ -4,14 +4,16 @@ import { AppLayout } from "@/components/app/AppLayout";
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: ({ location }) => {
-    const isAuth = localStorage.getItem("agenda_pro_auth") === "true";
-    if (!isAuth) {
-      throw redirect({
-        to: "/auth",
-        search: {
-          redirect: location.href,
-        },
-      });
+    if (typeof window !== "undefined") {
+      const isAuth = localStorage.getItem("agenda_pro_auth") === "true";
+      if (!isAuth) {
+        throw redirect({
+          to: "/auth",
+          search: {
+            redirect: location.href,
+          },
+        });
+      }
     }
   },
   component: () => (

@@ -17,6 +17,45 @@ import { useLongPress } from "@/hooks/use-long-press";
 import { AgendaEvent } from "@/lib/agenda/types";
 
 
+interface EventItemProps {
+  event: AgendaEvent;
+  onSelect: (event: AgendaEvent) => void;
+  onLongPress: (event: AgendaEvent) => void;
+}
+
+function EventItem({ event, onSelect, onLongPress }: EventItemProps) {
+  const longPressProps = useLongPress(() => onLongPress(event));
+
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-3 rounded-lg border p-3 cursor-pointer select-none transition-colors hover:bg-muted/50",
+        event.status === "concluido" && "opacity-60 bg-muted/30"
+      )}
+      {...longPressProps}
+      onClick={() => onSelect(event)}
+    >
+      <div
+        className={cn(
+          "size-2 rounded-full",
+          event.status === "concluido" ? "bg-muted-foreground" : "bg-primary"
+        )}
+      />
+      <div className="flex-1 min-w-0">
+        <p className={cn("text-sm font-medium", event.status === "concluido" && "line-through")}>
+          {event.title}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {new Date(event.start_at).toLocaleString("pt-BR")}
+        </p>
+      </div>
+      <div className="md:hidden text-muted-foreground opacity-50">
+        <MoreVertical className="size-4" />
+      </div>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/_authenticated/dashboard/")({
   component: Dashboard,
 });
@@ -48,13 +87,11 @@ function Dashboard() {
     setMenuOpen(false);
   };
 
-  
-
   const todayStr = new Date().toISOString().split("T")[0] || "";
   const todayEvents = (events || []).filter((e) => e.start_at?.startsWith(todayStr));
   const upcomingEvents = (events || []).filter((e) => (e.start_at || "") > todayStr);
-  const jessicaEvents = upcomingEvents.filter(e => e.responsible === "Jessica").slice(0, 5);
-  const andersonEvents = upcomingEvents.filter(e => e.responsible === "Anderson").slice(0, 5);
+  const jessicaEvents = upcomingEvents.filter((e) => e.responsible === "Jessica").slice(0, 5);
+  const andersonEvents = upcomingEvents.filter((e) => e.responsible === "Anderson").slice(0, 5);
 
   return (
     <div className="space-y-8">
@@ -103,33 +140,12 @@ function Dashboard() {
           <CardContent className="space-y-4">
             {jessicaEvents.length > 0 ? (
               jessicaEvents.map((event) => (
-                <div 
-                  key={event.id} 
-                  className={cn(
-                    "flex items-center gap-3 rounded-lg border p-3 cursor-pointer select-none transition-colors hover:bg-muted/50",
-                    event.status === "concluido" && "opacity-60 bg-muted/30"
-                  )}
-                  {...useLongPress(() => handleLongPress(event))}
-                  onClick={() => setEventDialog({ open: true, event })}
-                >
-                  <div
-                    className={cn(
-                      "size-2 rounded-full",
-                      event.status === "concluido" ? "bg-muted-foreground" : "bg-primary"
-                    )}
-                  />
-                  <div className="flex-1">
-                    <p className={cn("text-sm font-medium", event.status === "concluido" && "line-through")}>
-                      {event.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(event.start_at).toLocaleString("pt-BR")}
-                    </p>
-                  </div>
-                  <div className="md:hidden text-muted-foreground opacity-50">
-                    <MoreVertical className="size-4" />
-                  </div>
-                </div>
+                <EventItem
+                  key={event.id}
+                  event={event}
+                  onSelect={(e) => setEventDialog({ open: true, event: e })}
+                  onLongPress={handleLongPress}
+                />
               ))
             ) : (
               <p className="text-sm text-muted-foreground">Nenhum compromisso próximo para Jessica.</p>
@@ -144,33 +160,12 @@ function Dashboard() {
           <CardContent className="space-y-4">
             {andersonEvents.length > 0 ? (
               andersonEvents.map((event) => (
-                <div 
-                  key={event.id} 
-                  className={cn(
-                    "flex items-center gap-3 rounded-lg border p-3 cursor-pointer select-none transition-colors hover:bg-muted/50",
-                    event.status === "concluido" && "opacity-60 bg-muted/30"
-                  )}
-                  {...useLongPress(() => handleLongPress(event))}
-                  onClick={() => setEventDialog({ open: true, event })}
-                >
-                  <div
-                    className={cn(
-                      "size-2 rounded-full",
-                      event.status === "concluido" ? "bg-muted-foreground" : "bg-primary"
-                    )}
-                  />
-                  <div className="flex-1">
-                    <p className={cn("text-sm font-medium", event.status === "concluido" && "line-through")}>
-                      {event.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(event.start_at).toLocaleString("pt-BR")}
-                    </p>
-                  </div>
-                  <div className="md:hidden text-muted-foreground opacity-50">
-                    <MoreVertical className="size-4" />
-                  </div>
-                </div>
+                <EventItem
+                  key={event.id}
+                  event={event}
+                  onSelect={(e) => setEventDialog({ open: true, event: e })}
+                  onLongPress={handleLongPress}
+                />
               ))
             ) : (
               <p className="text-sm text-muted-foreground">Nenhum compromisso próximo para Anderson.</p>
@@ -179,18 +174,21 @@ function Dashboard() {
         </Card>
       </div>
 
-      <EventDialog state={eventDialog} onOpenChange={(open) => setEventDialog(s => ({ ...s, open }))} />
-      
+      <EventDialog
+        state={eventDialog}
+        onOpenChange={(open) => setEventDialog((s) => ({ ...s, open }))}
+      />
+
       <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuContent align="center" className="w-48">
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={() => menuEvent && handleComplete(menuEvent)}
             className="text-green-600 focus:text-green-600 focus:bg-green-50"
           >
             <CheckCircle className="mr-2 h-4 w-4" />
             Concluído
           </DropdownMenuItem>
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={() => menuEvent && handleDelete(menuEvent)}
             className="text-destructive focus:text-destructive focus:bg-destructive/10"
           >
