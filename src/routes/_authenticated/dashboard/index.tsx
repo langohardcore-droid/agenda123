@@ -110,8 +110,32 @@ function Dashboard() {
   const todayStr = new Date().toISOString().split("T")[0] || "";
   const todayEvents = (events || []).filter((e) => e.start_at?.startsWith(todayStr));
   const upcomingEvents = (events || []).filter((e) => (e.start_at || "") > todayStr);
-  const jessicaEvents = upcomingEvents.filter((e) => e.responsible === "Jessica").slice(0, 5);
-  const andersonEvents = upcomingEvents.filter((e) => e.responsible === "Anderson").slice(0, 5);
+  const sorted = [...upcomingEvents].sort((a, b) => (a.start_at || "").localeCompare(b.start_at || ""));
+  const jessicaDays = groupByDay(sorted.filter((e) => e.responsible === "Jessica"));
+  const andersonDays = groupByDay(sorted.filter((e) => e.responsible === "Anderson"));
+
+  const renderDays = (days: ReturnType<typeof groupByDay>, nome: string) =>
+    days.length > 0 ? (
+      days.map((day) => (
+        <div key={day.key} className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground capitalize">
+            {day.label}
+          </p>
+          <div className="space-y-2">
+            {day.items.map((event) => (
+              <EventItem
+                key={event.id}
+                event={event}
+                onSelect={(e) => setEventDialog({ open: true, event: e })}
+                onLongPress={handleLongPress}
+              />
+            ))}
+          </div>
+        </div>
+      ))
+    ) : (
+      <p className="text-sm text-muted-foreground">Nenhum compromisso próximo para {nome}.</p>
+    );
 
   return (
     <div className="space-y-8">
