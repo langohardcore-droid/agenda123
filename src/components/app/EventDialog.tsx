@@ -39,7 +39,6 @@ import {
   EVENT_STATUS,
   PRIORITIES,
   RECURRENCES,
-  REMINDERS,
   type AgendaEvent,
   type Scope,
 } from "@/lib/agenda/types";
@@ -90,7 +89,6 @@ export function EventDialog({
         recurrence: "nao",
         recurrence_interval: "1",
         recurrence_end: "",
-        reminder: e.reminder_minutes ? String(e.reminder_minutes) : NONE,
       });
     } else {
       const base = state.start ?? new Date();
@@ -134,7 +132,6 @@ export function EventDialog({
       recurrence: "nao",
       recurrence_interval: 1,
       recurrence_end: null,
-      reminder_minutes: form.reminder === NONE ? null : Number(form.reminder),
     });
     onOpenChange(false);
   }
@@ -219,23 +216,6 @@ export function EventDialog({
 
 
 
-          <div>
-            <Label>Lembrete</Label>
-            <Select value={form.reminder} onValueChange={(v) => set("reminder", v)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Sem lembrete" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NONE}>Sem lembrete</SelectItem>
-                {REMINDERS.map((r) => (
-                  <SelectItem key={r.value} value={String(r.value)}>
-                    {r.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
         </div>
 
         <DialogFooter className="gap-2 sm:justify-between">
@@ -301,6 +281,5 @@ function emptyForm() {
     recurrence: "nao" as AgendaEvent["recurrence"],
     recurrence_interval: "1",
     recurrence_end: "",
-    reminder: NONE,
   };
 }
