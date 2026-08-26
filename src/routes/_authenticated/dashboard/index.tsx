@@ -23,9 +23,26 @@ interface EventItemProps {
   onLongPress: (event: AgendaEvent) => void;
 }
 
+function groupByDay(events: AgendaEvent[]) {
+  const groups = new Map<string, { label: string; items: AgendaEvent[] }>();
+  for (const event of events) {
+    const key = (event.start_at || "").split("T")[0] || "sem-data";
+    const label =
+      key === "sem-data"
+        ? "Sem data"
+        : safeFormatDate(event.start_at, "EEEE 'dia' dd/MM");
+    const group = groups.get(key) ?? { label, items: [] };
+    group.items.push(event);
+    groups.set(key, group);
+  }
+  return [...groups.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => ({ key, ...value }));
+}
+
 function EventItem({ event, onSelect, onLongPress }: EventItemProps) {
   const longPressProps = useLongPress(() => onLongPress(event));
-  const formattedDate = safeFormatDate(event.start_at, "dd/MM/yyyy 'às' HH:mm");
+  const formattedDate = safeFormatDate(event.start_at, "HH:mm");
 
   return (
     <div
@@ -93,8 +110,32 @@ function Dashboard() {
   const todayStr = new Date().toISOString().split("T")[0] || "";
   const todayEvents = (events || []).filter((e) => e.start_at?.startsWith(todayStr));
   const upcomingEvents = (events || []).filter((e) => (e.start_at || "") > todayStr);
-  const jessicaEvents = upcomingEvents.filter((e) => e.responsible === "Jessica").slice(0, 5);
-  const andersonEvents = upcomingEvents.filter((e) => e.responsible === "Anderson").slice(0, 5);
+  const sorted = [...upcomingEvents].sort((a, b) => (a.start_at || "").localeCompare(b.start_at || ""));
+  const jessicaDays = groupByDay(sorted.filter((e) => e.responsible === "Jessica"));
+  const andersonDays = groupByDay(sorted.filter((e) => e.responsible === "Anderson"));
+
+  const renderDays = (days: ReturnType<typeof groupByDay>, nome: string) =>
+    days.length > 0 ? (
+      days.map((day) => (
+        <div key={day.key} className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground capitalize">
+            {day.label}
+          </p>
+          <div className="space-y-2">
+            {day.items.map((event) => (
+              <EventItem
+                key={event.id}
+                event={event}
+                onSelect={(e) => setEventDialog({ open: true, event: e })}
+                onLongPress={handleLongPress}
+              />
+            ))}
+          </div>
+        </div>
+      ))
+    ) : (
+      <p className="text-sm text-muted-foreground">Nenhum compromisso próximo para {nome}.</p>
+    );
 
   return (
     <div className="space-y-8">
@@ -140,19 +181,8 @@ function Dashboard() {
           <CardHeader>
             <CardTitle>Agenda da Jessica</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {jessicaEvents.length > 0 ? (
-              jessicaEvents.map((event) => (
-                <EventItem
-                  key={event.id}
-                  event={event}
-                  onSelect={(e) => setEventDialog({ open: true, event: e })}
-                  onLongPress={handleLongPress}
-                />
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">Nenhum compromisso próximo para Jessica.</p>
-            )}
+          <CardContent className="space-y-5">
+            {renderDays(jessicaDays, "Jessica")}
           </CardContent>
         </Card>
 
@@ -160,19 +190,8 @@ function Dashboard() {
           <CardHeader>
             <CardTitle>Agenda do Anderson</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {andersonEvents.length > 0 ? (
-              andersonEvents.map((event) => (
-                <EventItem
-                  key={event.id}
-                  event={event}
-                  onSelect={(e) => setEventDialog({ open: true, event: e })}
-                  onLongPress={handleLongPress}
-                />
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">Nenhum compromisso próximo para Anderson.</p>
-            )}
+          <CardContent className="space-y-5">
+            {renderDays(andersonDays, "Anderson")}
           </CardContent>
         </Card>
       </div>
