@@ -129,12 +129,23 @@ function Dashboard() {
   const jessicaDays = groupByDay(sorted.filter((e) => e.responsible === "Jessica"));
   const andersonDays = groupByDay(sorted.filter((e) => e.responsible === "Anderson"));
 
-  const renderDays = (days: ReturnType<typeof groupByDay>, nome: string) =>
+  const renderDays = (
+    days: ReturnType<typeof groupByDay>,
+    nome: string,
+    color: "jessica" | "anderson",
+  ) =>
     days.length > 0 ? (
       days.map((day) => (
         <div key={day.key} className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center rounded-lg bg-primary/10 px-3 py-1.5 text-sm font-bold text-primary">
+            <span
+              className={cn(
+                "inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-bold",
+                color === "jessica"
+                  ? "bg-jessica-soft text-jessica"
+                  : "bg-anderson-soft text-anderson",
+              )}
+            >
               {day.label}
             </span>
           </div>
