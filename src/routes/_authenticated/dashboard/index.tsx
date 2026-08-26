@@ -181,19 +181,8 @@ function Dashboard() {
           <CardHeader>
             <CardTitle>Agenda da Jessica</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {jessicaEvents.length > 0 ? (
-              jessicaEvents.map((event) => (
-                <EventItem
-                  key={event.id}
-                  event={event}
-                  onSelect={(e) => setEventDialog({ open: true, event: e })}
-                  onLongPress={handleLongPress}
-                />
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">Nenhum compromisso próximo para Jessica.</p>
-            )}
+          <CardContent className="space-y-5">
+            {renderDays(jessicaDays, "Jessica")}
           </CardContent>
         </Card>
 
@@ -201,19 +190,8 @@ function Dashboard() {
           <CardHeader>
             <CardTitle>Agenda do Anderson</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {andersonEvents.length > 0 ? (
-              andersonEvents.map((event) => (
-                <EventItem
-                  key={event.id}
-                  event={event}
-                  onSelect={(e) => setEventDialog({ open: true, event: e })}
-                  onLongPress={handleLongPress}
-                />
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">Nenhum compromisso próximo para Anderson.</p>
-            )}
+          <CardContent className="space-y-5">
+            {renderDays(andersonDays, "Anderson")}
           </CardContent>
         </Card>
       </div>
