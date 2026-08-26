@@ -132,10 +132,12 @@ function Dashboard() {
   const renderDays = (days: ReturnType<typeof groupByDay>, nome: string) =>
     days.length > 0 ? (
       days.map((day) => (
-        <div key={day.key} className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground capitalize">
-            {day.label}
-          </p>
+        <div key={day.key} className="space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center rounded-lg bg-primary/10 px-3 py-1.5 text-sm font-bold text-primary">
+              {day.label}
+            </span>
+          </div>
           <div className="space-y-2">
             {day.items.map((event) => (
               <EventItem
