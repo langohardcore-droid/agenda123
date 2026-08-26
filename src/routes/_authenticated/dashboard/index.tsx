@@ -107,10 +107,25 @@ function Dashboard() {
     setMenuOpen(false);
   };
 
-  const todayStr = new Date().toISOString().split("T")[0] || "";
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0 = domingo, 1 = segunda, ...
+  const diffToMonday = (dayOfWeek + 6) % 7;
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - diffToMonday);
+  weekStart.setHours(0, 0, 0, 0);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  weekEnd.setHours(23, 59, 59, 999);
+
+  const weekEvents = (events || []).filter((e) => {
+    if (!e.start_at) return false;
+    const d = new Date(e.start_at);
+    return d >= weekStart && d <= weekEnd;
+  });
+
+  const todayStr = today.toISOString().split("T")[0] || "";
   const todayEvents = (events || []).filter((e) => e.start_at?.startsWith(todayStr));
-  const upcomingEvents = (events || []).filter((e) => (e.start_at || "") > todayStr);
-  const sorted = [...upcomingEvents].sort((a, b) => (a.start_at || "").localeCompare(b.start_at || ""));
+  const sorted = [...weekEvents].sort((a, b) => (a.start_at || "").localeCompare(b.start_at || ""));
   const jessicaDays = groupByDay(sorted.filter((e) => e.responsible === "Jessica"));
   const andersonDays = groupByDay(sorted.filter((e) => e.responsible === "Anderson"));
 
