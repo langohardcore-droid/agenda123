@@ -210,7 +210,7 @@ function Dashboard() {
             <CardTitle>Agenda da Jessica</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
-            {renderDays(jessicaDays, "Jessica")}
+            {renderDays(jessicaDays, "Jessica", "jessica")}
           </CardContent>
         </Card>
 
@@ -219,7 +219,7 @@ function Dashboard() {
             <CardTitle>Agenda do Anderson</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
-            {renderDays(andersonDays, "Anderson")}
+            {renderDays(andersonDays, "Anderson", "anderson")}
           </CardContent>
         </Card>
       </div>
