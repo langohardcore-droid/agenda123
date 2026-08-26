@@ -39,7 +39,6 @@ import {
   EVENT_STATUS,
   PRIORITIES,
   RECURRENCES,
-  REMINDERS,
   type AgendaEvent,
   type Scope,
 } from "@/lib/agenda/types";
