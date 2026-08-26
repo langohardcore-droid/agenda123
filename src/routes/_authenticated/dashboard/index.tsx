@@ -23,9 +23,26 @@ interface EventItemProps {
   onLongPress: (event: AgendaEvent) => void;
 }
 
+function groupByDay(events: AgendaEvent[]) {
+  const groups = new Map<string, { label: string; items: AgendaEvent[] }>();
+  for (const event of events) {
+    const key = (event.start_at || "").split("T")[0] || "sem-data";
+    const label =
+      key === "sem-data"
+        ? "Sem data"
+        : safeFormatDate(event.start_at, "EEEE 'dia' dd/MM");
+    const group = groups.get(key) ?? { label, items: [] };
+    group.items.push(event);
+    groups.set(key, group);
+  }
+  return [...groups.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => ({ key, ...value }));
+}
+
 function EventItem({ event, onSelect, onLongPress }: EventItemProps) {
   const longPressProps = useLongPress(() => onLongPress(event));
-  const formattedDate = safeFormatDate(event.start_at, "dd/MM/yyyy 'às' HH:mm");
+  const formattedDate = safeFormatDate(event.start_at, "HH:mm");
 
   return (
     <div
