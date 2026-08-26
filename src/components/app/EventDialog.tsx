@@ -218,23 +218,6 @@ export function EventDialog({
 
 
 
-          <div>
-            <Label>Lembrete</Label>
-            <Select value={form.reminder} onValueChange={(v) => set("reminder", v)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Sem lembrete" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NONE}>Sem lembrete</SelectItem>
-                {REMINDERS.map((r) => (
-                  <SelectItem key={r.value} value={String(r.value)}>
-                    {r.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
         </div>
 
         <DialogFooter className="gap-2 sm:justify-between">
