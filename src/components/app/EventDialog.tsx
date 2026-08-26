@@ -89,7 +89,6 @@ export function EventDialog({
         recurrence: "nao",
         recurrence_interval: "1",
         recurrence_end: "",
-        reminder: e.reminder_minutes ? String(e.reminder_minutes) : NONE,
       });
     } else {
       const base = state.start ?? new Date();
