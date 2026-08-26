@@ -281,6 +281,5 @@ function emptyForm() {
     recurrence: "nao" as AgendaEvent["recurrence"],
     recurrence_interval: "1",
     recurrence_end: "",
-    reminder: NONE,
   };
 }
