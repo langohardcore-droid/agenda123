@@ -132,7 +132,6 @@ export function EventDialog({
       recurrence: "nao",
       recurrence_interval: 1,
       recurrence_end: null,
-      reminder_minutes: form.reminder === NONE ? null : Number(form.reminder),
     });
     onOpenChange(false);
   }
