@@ -41,6 +41,10 @@
   --color-empresa-soft: var(--cat-empresa-soft);
   --color-pessoal: var(--cat-pessoal);
   --color-pessoal-soft: var(--cat-pessoal-soft);
+  --color-jessica: var(--jessica);
+  --color-jessica-soft: var(--jessica-soft);
+  --color-anderson: var(--anderson);
+  --color-anderson-soft: var(--anderson-soft);
   --color-reuniao: var(--cat-reuniao);
   --color-reuniao-soft: var(--cat-reuniao-soft);
   --color-urgente: var(--cat-urgente);
