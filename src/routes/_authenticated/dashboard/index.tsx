@@ -42,7 +42,6 @@ function groupByDay(events: AgendaEvent[]) {
 
 function EventItem({ event, onSelect, onLongPress }: EventItemProps) {
   const longPressProps = useLongPress(() => onLongPress(event));
-  const formattedDate = safeFormatDate(event.start_at, "HH:mm");
 
   return (
     <div
@@ -55,7 +54,7 @@ function EventItem({ event, onSelect, onLongPress }: EventItemProps) {
     >
       <div
         className={cn(
-          "size-2 rounded-full",
+          "size-2 rounded-full shrink-0",
           event.status === "concluido" ? "bg-muted-foreground" : "bg-primary"
         )}
       />
@@ -63,13 +62,13 @@ function EventItem({ event, onSelect, onLongPress }: EventItemProps) {
         <p className={cn("text-sm font-medium", event.status === "concluido" && "line-through")}>
           {event.title}
         </p>
-        {formattedDate && (
-          <p className="text-xs text-muted-foreground">
-            {formattedDate}
+        {event.description?.trim() && (
+          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+            {event.description}
           </p>
         )}
       </div>
-      <div className="md:hidden text-muted-foreground opacity-50">
+      <div className="md:hidden text-muted-foreground opacity-50 shrink-0">
         <MoreVertical className="size-4" />
       </div>
     </div>
